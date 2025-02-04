@@ -1,10 +1,12 @@
 import { UsersService } from 'src/users/users.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ProductsService {
@@ -12,6 +14,7 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     private readonly usersService: UsersService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
@@ -42,6 +45,11 @@ export class ProductsService {
   }
 
   async findOne(id: number): Promise<Product> {
+
+    const productsCached = await this.cacheManager.get<Product>(String(id));
+    if (productsCached) {
+      return productsCached;
+    }
     const product = await this.productRepository.findOne({
       where: { product_id: id },
       relations: ['seller', 'product_variants'],
@@ -50,6 +58,8 @@ export class ProductsService {
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
+
+    this.cacheManager.set(String(id), product);
 
     return product;
   }

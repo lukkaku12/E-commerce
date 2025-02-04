@@ -13,9 +13,22 @@ import { AttributeDefinitionModule } from './attribute-definition/attribute-defi
 import { ProductVariant } from './productVariants/entities/product-variant.entity';
 import { VariantAttribute } from './variant-attributes/entities/variant-attribute.entity';
 import { AttributeDefinition } from './attribute-definition/entities/attribute-definition.entity';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
 
 @Module({
-  imports: [ConfigModule.forRoot({isGlobal: true}),
+  imports: [CacheModule.registerAsync({
+    isGlobal: true,
+      useFactory: async () => ({
+        store: await redisStore({
+          socket: {
+            host: 'localhost',
+            port: 6379,
+          },
+        }),
+      }),
+  }),
+    ConfigModule.forRoot({isGlobal: true}),
     TypeOrmModule.forRootAsync({
     inject: [ConfigService],
 
