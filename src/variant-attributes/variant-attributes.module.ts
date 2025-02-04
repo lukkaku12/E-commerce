@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { VariantAttributesService } from './variant-attributes.service';
-import { VariantAttributesController } from './variant-attributes.controller';
-import { VariantAttribute } from './entities/variant-attribute.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { VariantAttribute } from './entities/variant-attribute.entity';
+import { VariantAttributesController } from './variant-attributes.controller';
+import { VariantAttributesService } from './variant-attributes.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([VariantAttribute])],

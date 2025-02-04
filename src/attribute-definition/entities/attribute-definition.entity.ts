@@ -1,5 +1,5 @@
 import { VariantAttribute } from 'src/variant-attributes/entities/variant-attribute.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('attribute_definitions')
 export class AttributeDefinition {
@@ -13,6 +13,6 @@ export class AttributeDefinition {
   dataType: string;
 
   // Relación con VariantAttributes
-  @OneToMany(() => VariantAttribute, va => va.attributeDefinition)
+  @OneToMany(() => VariantAttribute, (va) => va.attributeDefinition)
   variantAttributes: VariantAttribute[];
 }

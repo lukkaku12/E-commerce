@@ -1,27 +1,39 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  ConflictException, 
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiCreatedResponse, ApiBadRequestResponse, ApiConflictResponse, ApiOkResponse, ApiNotFoundResponse } from '@nestjs/swagger';
-import { UsersService } from './users.service';
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { UsersService } from './users.service';
 
-@ApiTags('Users') 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('create-user')
-  @ApiOperation({ summary: 'Register a new user', description: 'Creates a new user and validates the uniqueness of the email.' })
-  @ApiCreatedResponse({ 
+  @ApiOperation({
+    summary: 'Register a new user',
+    description:
+      'Creates a new user and validates the uniqueness of the email.',
+  })
+  @ApiCreatedResponse({
     description: 'User successfully registered.',
     type: User,
     schema: {
@@ -58,7 +70,10 @@ export class UsersController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all users', description: 'Returns a list of all users.' })
+  @ApiOperation({
+    summary: 'Get all users',
+    description: 'Returns a list of all users.',
+  })
   @ApiOkResponse({
     description: 'List of users retrieved successfully.',
     schema: {
@@ -81,7 +96,10 @@ export class UsersController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get user by ID', description: 'Returns the details of a user by their ID.' })
+  @ApiOperation({
+    summary: 'Get user by ID',
+    description: 'Returns the details of a user by their ID.',
+  })
   @ApiOkResponse({
     description: 'User retrieved successfully.',
     type: User,
@@ -108,7 +126,10 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update user by ID', description: 'Updates the details of a user by their ID.' })
+  @ApiOperation({
+    summary: 'Update user by ID',
+    description: 'Updates the details of a user by their ID.',
+  })
   @ApiOkResponse({
     description: 'User updated successfully.',
     type: User,
@@ -135,7 +156,10 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete user by ID', description: 'Deletes a user by their ID.' })
+  @ApiOperation({
+    summary: 'Delete user by ID',
+    description: 'Deletes a user by their ID.',
+  })
   @ApiOkResponse({
     description: 'User deleted successfully.',
     schema: {

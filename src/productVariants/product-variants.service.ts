@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { Product } from '../products/entities/product.entity';
 import { CreateProductVariantDto } from './dto/create-product_variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product_variant.dto';
@@ -15,7 +16,9 @@ export class ProductVariantsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async create(createProductVariantDto: CreateProductVariantDto): Promise<ProductVariant> {
+  async create(
+    createProductVariantDto: CreateProductVariantDto,
+  ): Promise<ProductVariant> {
     // Validar que el producto exista
     const product = await this.productRepository.findOne({
       where: { product_id: createProductVariantDto.product_id },

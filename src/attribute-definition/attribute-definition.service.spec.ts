@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { AttributeDefinitionService } from './attribute-definition.service';
 
 describe('AttributeDefinitionService', () => {
@@ -9,7 +10,9 @@ describe('AttributeDefinitionService', () => {
       providers: [AttributeDefinitionService],
     }).compile();
 
-    service = module.get<AttributeDefinitionService>(AttributeDefinitionService);
+    service = module.get<AttributeDefinitionService>(
+      AttributeDefinitionService,
+    );
   });
 
   it('should be defined', () => {

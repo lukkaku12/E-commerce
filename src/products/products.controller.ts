@@ -1,10 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'; // Importación de los decoradores de Swagger
 import { JwtAuthGuard } from 'auth/guards/jwt/jwt-auth.guard';
 import { RolesGuard } from 'auth/guards/roles.guard';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger'; // Importación de los decoradores de Swagger
+
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductsService } from './products.service';
 
 @ApiTags('Products') // Categoriza el controlador en la documentación Swagger
 @Controller('products')

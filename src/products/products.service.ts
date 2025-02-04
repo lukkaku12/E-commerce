@@ -1,12 +1,13 @@
-import { UsersService } from 'src/users/users.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Cache } from 'cache-manager';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
+
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ProductsService {
@@ -14,18 +15,18 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     private readonly usersService: UsersService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     // 1. Validar que el seller exista
     const seller = await this.usersService.validateUserExists(
-      createProductDto.seller_id 
+      createProductDto.seller_id,
     );
 
     if (!seller) {
       throw new NotFoundException(
-        `Seller with ID ${createProductDto.seller_id} not found`
+        `Seller with ID ${createProductDto.seller_id} not found`,
       );
     }
 
@@ -45,7 +46,6 @@ export class ProductsService {
   }
 
   async findOne(id: number): Promise<Product> {
-
     const productsCached = await this.cacheManager.get<Product>(String(id));
     if (productsCached) {
       return productsCached;
@@ -64,11 +64,16 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
+  async update(
+    id: number,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
     const product = await this.productRepository.preload({
       product_id: id,
       ...updateProductDto,
-      ...(updateProductDto.seller_id && { seller: { user_id: updateProductDto.seller_id } }),
+      ...(updateProductDto.seller_id && {
+        seller: { user_id: updateProductDto.seller_id },
+      }),
     });
 
     if (!product) {
@@ -80,7 +85,7 @@ export class ProductsService {
 
   async remove(id: number): Promise<void> {
     const result = await this.productRepository.delete(id);
-    
+
     if (result.affected === 0) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }

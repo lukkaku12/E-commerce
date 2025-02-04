@@ -1,11 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+
 import { AttributeDefinitionService } from './attribute-definition.service';
 import { CreateAttributeDefinitionDto } from './dto/create-attribute-definition.dto';
 import { UpdateAttributeDefinitionDto } from './dto/update-attribute-definition.dto';
 
 @Controller('attribute-definition')
 export class AttributeDefinitionController {
-  constructor(private readonly attributeDefinitionService: AttributeDefinitionService) {}
+  constructor(
+    private readonly attributeDefinitionService: AttributeDefinitionService,
+  ) {}
 
   @Post()
   create(@Body() createAttributeDefinitionDto: CreateAttributeDefinitionDto) {
@@ -23,8 +34,14 @@ export class AttributeDefinitionController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAttributeDefinitionDto: UpdateAttributeDefinitionDto) {
-    return this.attributeDefinitionService.update(+id, updateAttributeDefinitionDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateAttributeDefinitionDto: UpdateAttributeDefinitionDto,
+  ) {
+    return this.attributeDefinitionService.update(
+      +id,
+      updateAttributeDefinitionDto,
+    );
   }
 
   @Delete(':id')

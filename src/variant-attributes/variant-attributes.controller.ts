@@ -1,11 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { VariantAttributesService } from './variant-attributes.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+
 import { CreateVariantAttributeDto } from './dto/create-variant-attribute.dto';
 import { UpdateVariantAttributeDto } from './dto/update-variant-attribute.dto';
+import { VariantAttributesService } from './variant-attributes.service';
 
 @Controller('variant-attributes')
 export class VariantAttributesController {
-  constructor(private readonly variantAttributesService: VariantAttributesService) {}
+  constructor(
+    private readonly variantAttributesService: VariantAttributesService,
+  ) {}
 
   @Post()
   create(@Body() createVariantAttributeDto: CreateVariantAttributeDto) {
@@ -23,7 +34,10 @@ export class VariantAttributesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVariantAttributeDto: UpdateVariantAttributeDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateVariantAttributeDto: UpdateVariantAttributeDto,
+  ) {
     return this.variantAttributesService.update(+id, updateVariantAttributeDto);
   }
 

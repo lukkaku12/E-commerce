@@ -16,4 +16,3 @@ export class CreateProductVariantDto {
   @IsNotEmpty()
   sku: string;
 }
-

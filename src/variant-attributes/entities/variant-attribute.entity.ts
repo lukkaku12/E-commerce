@@ -1,6 +1,6 @@
 import { AttributeDefinition } from 'src/attribute-definition/entities/attribute-definition.entity';
 import { ProductVariant } from 'src/productVariants/entities/product-variant.entity';
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('variant_attributes')
 export class VariantAttribute {

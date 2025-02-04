@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { VariantAttributesService } from './variant-attributes.service';
 
 describe('VariantAttributesService', () => {

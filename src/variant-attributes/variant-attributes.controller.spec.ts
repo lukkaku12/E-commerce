@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { VariantAttributesController } from './variant-attributes.controller';
 import { VariantAttributesService } from './variant-attributes.service';
 
@@ -11,7 +12,9 @@ describe('VariantAttributesController', () => {
       providers: [VariantAttributesService],
     }).compile();
 
-    controller = module.get<VariantAttributesController>(VariantAttributesController);
+    controller = module.get<VariantAttributesController>(
+      VariantAttributesController,
+    );
   });
 
   it('should be defined', () => {
