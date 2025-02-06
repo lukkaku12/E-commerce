@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateAttributeDefinitionDto } from './dto/create-attribute-definition.dto';
-import { UpdateAttributeDefinitionDto } from './dto/update-attribute-definition.dto';
-
 @Injectable()
 export class AttributeDefinitionService {
-  create(createAttributeDefinitionDto: CreateAttributeDefinitionDto) {
+  create() {
     return 'This action adds a new attributeDefinition';
   }
 
@@ -17,10 +14,7 @@ export class AttributeDefinitionService {
     return `This action returns a #${id} attributeDefinition`;
   }
 
-  update(
-    id: number,
-    updateAttributeDefinitionDto: UpdateAttributeDefinitionDto,
-  ) {
+  update(id: number) {
     return `This action updates a #${id} attributeDefinition`;
   }
 

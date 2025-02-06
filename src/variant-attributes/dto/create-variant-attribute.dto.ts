@@ -1,1 +1,1 @@
-export class CreateVariantAttributeDto {}
+export class _CreateVariantAttributeDto {}

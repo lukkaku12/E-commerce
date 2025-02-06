@@ -1,1 +1,1 @@
-export class CreateAttributeDefinitionDto {}
+export class _CreateAttributeDefinitionDto {}

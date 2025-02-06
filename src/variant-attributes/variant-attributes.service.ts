@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateVariantAttributeDto } from './dto/create-variant-attribute.dto';
-import { UpdateVariantAttributeDto } from './dto/update-variant-attribute.dto';
-
 @Injectable()
 export class VariantAttributesService {
-  create(createVariantAttributeDto: CreateVariantAttributeDto) {
+  create() {
     return 'This action adds a new variantAttribute';
   }
 
@@ -17,7 +14,7 @@ export class VariantAttributesService {
     return `This action returns a #${id} variantAttribute`;
   }
 
-  update(id: number, updateVariantAttributeDto: UpdateVariantAttributeDto) {
+  update(id: number) {
     return `This action updates a #${id} variantAttribute`;
   }
 

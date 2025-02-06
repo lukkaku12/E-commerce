@@ -10,6 +10,7 @@ import { Product } from './products/entities/product.entity';
 import { ProductsModule } from './products/products.module';
 import { ProductVariant } from './productVariants/entities/product-variant.entity';
 import { ProductVariantsModule } from './productVariants/product-variants.module';
+import { ServiceScheduleModule } from './service-schedule/service-schedule.module';
 import { Service } from './services/entities/service.entity';
 import { ServicesModule } from './services/services.module';
 import { User } from './users/entities/user.entity';
@@ -61,6 +62,7 @@ import { VariantAttributesModule } from './variant-attributes/variant-attributes
     ProductVariantsModule,
     VariantAttributesModule,
     AttributeDefinitionModule,
+    ServiceScheduleModule,
   ],
 })
 export class AppModule {}

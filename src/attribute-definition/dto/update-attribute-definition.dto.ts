@@ -1,7 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 
-import { CreateAttributeDefinitionDto } from './create-attribute-definition.dto';
+import { _CreateAttributeDefinitionDto } from './create-attribute-definition.dto';
 
-export class UpdateAttributeDefinitionDto extends PartialType(
-  CreateAttributeDefinitionDto,
+export class _UpdateAttributeDefinitionDto extends PartialType(
+  _CreateAttributeDefinitionDto,
 ) {}
