@@ -17,6 +17,7 @@ import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { VariantAttribute } from './variant-attributes/entities/variant-attribute.entity';
 import { VariantAttributesModule } from './variant-attributes/variant-attributes.module';
+import { SeedersModule } from './seeders/seeders.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { VariantAttributesModule } from './variant-attributes/variant-attributes
     VariantAttributesModule,
     AttributeDefinitionModule,
     ServiceScheduleModule,
+    SeedersModule,
   ],
 })
 export class AppModule {}

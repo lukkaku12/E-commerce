@@ -110,4 +110,22 @@ export class AuthController {
     const jwtAndUser = this.authService.generateJwtToken(user);
     return jwtAndUser;
   }
+
+  @Post('logout')
+  @ApiOperation({
+    summary: 'Logout a user',
+    description:
+      'Logs out a user by instructing the client to delete the JWT token. This endpoint does not invalidate tokens on the server side.',
+  })
+  @ApiCreatedResponse({
+    description: 'User successfully logged out.',
+    schema: {
+      example: {
+        message: 'Logout successful. Delete the token on the client side.',
+      },
+    },
+  })
+  logout() {
+    return this.authService.logout();
+  }
 }

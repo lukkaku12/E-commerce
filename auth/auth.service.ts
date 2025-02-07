@@ -15,7 +15,7 @@ interface JwtPayload {
   role: string;
 }
 
-interface JwtTokenData {
+export interface JwtTokenData {
   accessToken: string;
   user: User;
 }
@@ -73,5 +73,9 @@ export class AuthService {
     hashedPassword: string,
   ): Promise<boolean> {
     return bcrypt.compare(plainText, hashedPassword);
+  }
+
+  async logout() {
+    return { message: "Logout successful. Delete the token on the client side." };
   }
 }
