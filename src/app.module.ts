@@ -10,6 +10,7 @@ import { Product } from './products/entities/product.entity';
 import { ProductsModule } from './products/products.module';
 import { ProductVariant } from './productVariants/entities/product-variant.entity';
 import { ProductVariantsModule } from './productVariants/product-variants.module';
+import { SeedersModule } from './seeders/seeders.module';
 import { ServiceScheduleModule } from './service-schedule/service-schedule.module';
 import { Service } from './services/entities/service.entity';
 import { ServicesModule } from './services/services.module';
@@ -17,7 +18,6 @@ import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { VariantAttribute } from './variant-attributes/entities/variant-attribute.entity';
 import { VariantAttributesModule } from './variant-attributes/variant-attributes.module';
-import { SeedersModule } from './seeders/seeders.module';
 
 @Module({
   imports: [
