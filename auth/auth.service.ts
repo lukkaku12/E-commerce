@@ -10,7 +10,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 
-interface JwtPayload {
+export interface JwtPayload {
   sub: number;
   role: string;
 }

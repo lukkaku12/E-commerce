@@ -6,6 +6,8 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'; // Importación de los decoradores de Swagger
@@ -15,14 +17,16 @@ import { RolesGuard } from 'auth/guards/roles.guard';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
+import { Request, request } from 'express';
+import { JwtPayload } from 'auth/auth.service';
 
 @ApiTags('Products') // Categoriza el controlador en la documentación Swagger
 @Controller('products')
 @UseGuards(JwtAuthGuard)
+@UseGuards(new RolesGuard(['seller']))
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @UseGuards(new RolesGuard(['seller']))
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo producto' }) // Descripción de la operación
   @ApiResponse({ status: 201, description: 'Producto creado exitosamente.' }) // Respuesta cuando el producto es creado
@@ -32,10 +36,16 @@ export class ProductsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Obtener todos los productos' }) // Descripción de la operación
-  @ApiResponse({ status: 200, description: 'Lista de productos' }) // Respuesta cuando se obtienen los productos
-  findAll() {
-    return this.productsService.findAll();
+  @ApiOperation({ summary: 'Obtener todos los productos' })
+  @ApiResponse({ status: 200, description: 'Lista de productos' })
+  findAll(
+    @Req() req: Request,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    const user = req.user as JwtPayload;
+    const offset = (page - 1) * limit;
+    return this.productsService.findAll(user.sub, limit, offset);
   }
 
   @Get(':id')

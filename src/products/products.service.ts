@@ -39,9 +39,12 @@ export class ProductsService {
     return await this.productRepository.save(product);
   }
 
-  async findAll(): Promise<Product[]> {
+  async findAll(id: number, limit: number, offset: number): Promise<Product[]> {
     return await this.productRepository.find({
+      where: { seller: { user_id: id } },
       relations: ['seller', 'product_variants'],
+      take: limit,
+      skip: offset,
     });
   }
 
