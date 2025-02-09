@@ -70,7 +70,20 @@ export class ProductsService {
   async update(
     id: number,
     updateProductDto: UpdateProductDto,
+    user_id: number,
   ): Promise<Product> {
+    const productFound = await this.productRepository.findOne({
+      where: {
+        product_id: id, // Buscar por product_id
+        seller: { user_id: user_id }, // Verificar que pertenezca al usuario
+      },
+      relations: ['seller', 'product_variants'], // Cargar relaciones
+    });
+
+    if (!productFound) {
+      throw new NotFoundException(`Product not found with ID ${id}`);
+    }
+
     const product = await this.productRepository.preload({
       product_id: id,
       ...updateProductDto,
@@ -86,7 +99,16 @@ export class ProductsService {
     return this.productRepository.save(product);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number, user_id: number): Promise<void> {
+    const productFound = await this.productRepository.findOne({
+      where: { product_id: id, seller: { user_id: user_id } },
+      relations: ['seller', 'product_variants'],
+    });
+
+    if (!productFound) {
+      throw new NotFoundException(`Product not found with ID ${id}`);
+    }
+
     const result = await this.productRepository.delete(id);
 
     if (result.affected === 0) {

@@ -62,8 +62,13 @@ export class ProductsController {
   @ApiParam({ name: 'id', description: 'ID del producto a actualizar' }) // Descripción del parámetro de ID
   @ApiResponse({ status: 200, description: 'Producto actualizado' }) // Respuesta cuando se actualiza el producto
   @ApiResponse({ status: 404, description: 'Producto no encontrado' }) // Respuesta cuando no se encuentra el producto a actualizar
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(+id, updateProductDto);
+  update(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    const user = req.user as JwtPayload;
+    return this.productsService.update(+id, updateProductDto, user.sub);
   }
 
   @Delete(':id')
@@ -71,7 +76,8 @@ export class ProductsController {
   @ApiParam({ name: 'id', description: 'ID del producto a eliminar' }) // Descripción del parámetro de ID
   @ApiResponse({ status: 200, description: 'Producto eliminado' }) // Respuesta cuando se elimina el producto
   @ApiResponse({ status: 404, description: 'Producto no encontrado' }) // Respuesta cuando no se encuentra el producto a eliminar
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+  remove(@Req() req: Request, @Param('id') id: string) {
+    const user = req.user as JwtPayload;
+    return this.productsService.remove(+id, user.sub);
   }
 }
