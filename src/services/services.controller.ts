@@ -6,6 +6,8 @@ import {
   Param,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -22,9 +24,14 @@ import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { Service } from './entities/service.entity';
 import { ServicesService } from './services.service';
+import { JwtPayload } from 'auth/auth.service';
+import { Request } from 'express';
+import { JwtAuthGuard } from 'auth/guards/jwt/jwt-auth.guard';
+import { RolesGuard } from 'auth/guards/roles.guard';
 
 @ApiTags('Services')
 @Controller('services')
+@UseGuards(JwtAuthGuard)
 export class ServicesController {
   constructor(private readonly servicesService: ServicesService) {}
 
@@ -150,7 +157,12 @@ export class ServicesController {
   @ApiNotFoundResponse({
     description: 'Servicio no encontrado',
   })
-  remove(@Param('id') id: string) {
-    return this.servicesService.remove(+id);
+  @ApiBadRequestResponse({
+    description: 'No tiene permisos para eliminar este servicio',
+  })
+  @UseGuards(new RolesGuard(['seller']))
+  remove(@Req() req: Request, @Param('id') id: string) {
+    const user = req.user as JwtPayload;
+    return this.servicesService.remove(+id, user.sub);
   }
 }

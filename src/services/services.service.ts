@@ -60,7 +60,17 @@ export class ServicesService {
     return await this.serviceRepository.save(existingService);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number, user_id: number): Promise<void> {
+
+    const serviceFound = await this.serviceRepository.findOne({
+      where: { service_id: id, seller: { user_id: user_id } },
+      relations: ['seller', 'product_variants'],
+    });
+
+    if (!serviceFound) {
+      throw new NotFoundException(`Product not found with ID ${id}`);
+    }
+
     const result = await this.serviceRepository.delete(id);
 
     if (result.affected === 0) {

@@ -1,4 +1,5 @@
 import { Product } from 'src/products/entities/product.entity';
+import { Service } from 'src/services/entities/service.entity';
 import {
   Column,
   CreateDateColumn,
@@ -39,6 +40,9 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
+
+  @OneToMany(() => Service, (service) => service.seller)
+  service: Service[];
 
   @OneToMany(() => Product, (product) => product.seller)
   products: Product[];
