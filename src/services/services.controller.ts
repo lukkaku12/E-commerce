@@ -19,15 +19,15 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { JwtPayload } from 'auth/auth.service';
+import { JwtAuthGuard } from 'auth/guards/jwt/jwt-auth.guard';
+import { RolesGuard } from 'auth/guards/roles.guard';
+import { Request } from 'express';
 
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { Service } from './entities/service.entity';
 import { ServicesService } from './services.service';
-import { JwtPayload } from 'auth/auth.service';
-import { Request } from 'express';
-import { JwtAuthGuard } from 'auth/guards/jwt/jwt-auth.guard';
-import { RolesGuard } from 'auth/guards/roles.guard';
 
 @ApiTags('Services')
 @Controller('services')
@@ -135,8 +135,13 @@ export class ServicesController {
       },
     },
   })
-  update(@Param('id') id: string, @Body() updateServiceDto: UpdateServiceDto) {
-    return this.servicesService.update(+id, updateServiceDto);
+  update(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() updateServiceDto: UpdateServiceDto,
+  ) {
+    const user = req.user as JwtPayload;
+    return this.servicesService.update(+id, updateServiceDto, user.sub);
   }
 
   @Delete(':id')

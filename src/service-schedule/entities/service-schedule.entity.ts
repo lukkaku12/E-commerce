@@ -24,4 +24,7 @@ export class ServiceSchedule {
 
   @Column({ type: 'date' })
   schedule_date: Date; // Fecha completa (ej: '2024-09-08')
+
+  @Column()
+  isAvailable: boolean;
 }

@@ -1,6 +1,13 @@
 import { ServiceSchedule } from 'src/service-schedule/entities/service-schedule.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Service {
@@ -23,7 +30,7 @@ export class Service {
   updated_at: Date;
 
   @ManyToOne(() => User, (user) => user.service)
-  @JoinColumn({ name:'seller_id' })
+  @JoinColumn({ name: 'seller_id' })
   seller: User;
 
   @OneToMany(

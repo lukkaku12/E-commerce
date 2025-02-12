@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -46,7 +50,18 @@ export class ServicesService {
   async update(
     id: number,
     updateServiceDto: UpdateServiceDto,
+    sellerId: number,
   ): Promise<Service> {
+    const serviceOnDatabase = await this.serviceRepository.findOne({
+      where: { service_id: id, seller: { user_id: sellerId } },
+    });
+
+    if (!serviceOnDatabase) {
+      throw new ForbiddenException(
+        'No tienes permisos para modificar este servicio',
+      );
+    }
+
     const existingService = await this.serviceRepository.preload({
       service_id: id,
       ...updateServiceDto,
@@ -61,7 +76,6 @@ export class ServicesService {
   }
 
   async remove(id: number, user_id: number): Promise<void> {
-
     const serviceFound = await this.serviceRepository.findOne({
       where: { service_id: id, seller: { user_id: user_id } },
       relations: ['seller', 'product_variants'],

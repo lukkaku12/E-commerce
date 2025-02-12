@@ -25,7 +25,7 @@ import { ProductsService } from './products.service';
 @UseGuards(JwtAuthGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
-  
+
   @Post()
   @UseGuards(new RolesGuard(['seller']))
   @ApiOperation({ summary: 'Crear un nuevo producto' }) // Descripción de la operación
