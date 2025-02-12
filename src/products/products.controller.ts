@@ -23,11 +23,11 @@ import { ProductsService } from './products.service';
 @ApiTags('Products') // Categoriza el controlador en la documentación Swagger
 @Controller('products')
 @UseGuards(JwtAuthGuard)
-@UseGuards(new RolesGuard(['seller']))
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
-
+  
   @Post()
+  @UseGuards(new RolesGuard(['seller']))
   @ApiOperation({ summary: 'Crear un nuevo producto' }) // Descripción de la operación
   @ApiResponse({ status: 201, description: 'Producto creado exitosamente.' }) // Respuesta cuando el producto es creado
   @ApiResponse({ status: 403, description: 'Acceso denegado' }) // Respuesta cuando el acceso es denegado (por falta de rol)
@@ -57,7 +57,16 @@ export class ProductsController {
     return this.productsService.findOne(+id);
   }
 
+  @Get()
+  @UseGuards(new RolesGuard(['buyer']))
+  @ApiOperation({ summary: 'Obtener producto con cierta referencia (user)' }) // Descripción de la operación
+  @ApiResponse({ status: 200, description: 'producto por referencia' })
+  findByReferenceId(@Query() reference: string) {
+    return this.productsService.findByReferenceId(reference);
+  }
+
   @Patch(':id')
+  @UseGuards(new RolesGuard(['seller']))
   @ApiOperation({ summary: 'Actualizar un producto' }) // Descripción de la operación
   @ApiParam({ name: 'id', description: 'ID del producto a actualizar' }) // Descripción del parámetro de ID
   @ApiResponse({ status: 200, description: 'Producto actualizado' }) // Respuesta cuando se actualiza el producto
@@ -72,6 +81,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @UseGuards(new RolesGuard(['seller']))
   @ApiOperation({ summary: 'Eliminar un producto' }) // Descripción de la operación
   @ApiParam({ name: 'id', description: 'ID del producto a eliminar' }) // Descripción del parámetro de ID
   @ApiResponse({ status: 200, description: 'Producto eliminado' }) // Respuesta cuando se elimina el producto

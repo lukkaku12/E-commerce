@@ -115,4 +115,43 @@ export class ProductsService {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
   }
+
+  async findByReferenceId(referenceName: string): Promise<Product[] | { message: string }> {
+    // Verifica que referenceName no esté vacío
+    if (!referenceName || referenceName.trim() === "") {
+      throw new Error("El término de búsqueda no puede estar vacío.");
+    }
+  
+    try {
+      const products = await this.productRepository
+        .createQueryBuilder("product")
+        .leftJoinAndSelect("product.variants", "variant")
+        .leftJoinAndSelect("product.seller", "seller")
+        .where("LOWER(product.gtin) LIKE LOWER(:searchTerm)", { searchTerm: `%${referenceName}%` })
+        .orWhere("LOWER(product.mpn) LIKE LOWER(:searchTerm)", { searchTerm: `%${referenceName}%` })
+        .orWhere("LOWER(product.brand) LIKE LOWER(:searchTerm)", { searchTerm: `%${referenceName}%` })
+        .orWhere("LOWER(product.base_model) LIKE LOWER(:searchTerm)", { searchTerm: `%${referenceName}%` })
+        .select([
+          "product.id",
+          "product.brand",
+          "product.base_model",
+          "variant.price",
+          "variant.stock",
+          "seller.id",
+          "seller.name"
+        ])
+        .getMany();
+  
+      // Verifica si no se encontraron productos
+      if (products.length === 0) {
+        return { message: "No se encontraron productos con la referencia proporcionada." };
+      }
+  
+      return products;
+    } catch (error) {
+      // Manejo de errores
+      console.error("Error al buscar productos:", error);
+      throw new Error("Ocurrió un error al buscar productos.");
+    }
+  }
 }

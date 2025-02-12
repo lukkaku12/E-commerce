@@ -16,15 +16,19 @@ export class Product {
   product_id: number;
 
   @Column()
+  // @Index() para cuando la tabla sea masiva de datos
   gtin: string;
 
   @Column()
+  // @Index() para cuando la tabla sea masiva de datos
   mpn: string;
 
   @Column()
+  // @Index() para cuando la tabla sea masiva de datos
   brand: string;
 
   @Column()
+  // @Index() para cuando la tabla sea masiva de datos
   base_model: string;
 
   @ManyToOne(() => User, (user) => user.products)
