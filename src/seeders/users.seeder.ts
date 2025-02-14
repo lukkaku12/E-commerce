@@ -4,6 +4,7 @@ import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 
 import { User, UserRole } from '../users/entities/user.entity';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 export default class UserSeeder {
   constructor(
@@ -16,20 +17,26 @@ export default class UserSeeder {
       {
         name: 'Juan Pérez',
         email: 'juan.perez@example.com',
-        password: 'password123', // En producción, usa contraseñas hasheadas
+        password: 'password123',
         role: UserRole.BUYER,
         created_at: new Date(),
         updated_at: new Date(),
-        products: [], // Relación con productos (opcional)
+        products: [],
+        service: [],
+        transactions: [],
+        orders: [],
       },
       {
         name: 'María Gómez',
         email: 'maria.gomez@example.com',
-        password: 'securepassword', // En producción, usa contraseñas hasheadas
+        password: 'securepassword',
         role: UserRole.SELLER,
         created_at: new Date(),
         updated_at: new Date(),
-        products: [], // Relación con productos (opcional)
+        products: [],
+        service: [],
+        transactions: [],
+        orders: [],
       },
       {
         name: 'Carlos López',
@@ -39,6 +46,9 @@ export default class UserSeeder {
         created_at: new Date(),
         updated_at: new Date(),
         products: [],
+        service: [],
+        transactions: [],
+        orders: [],
       },
       {
         name: 'Ana Martínez',
@@ -48,12 +58,15 @@ export default class UserSeeder {
         created_at: new Date(),
         updated_at: new Date(),
         products: [],
+        service: [],
+        transactions: [],
+        orders: [],
       },
     ];
 
     for (const user of users) {
       const userFound = await this.userRepository.findOne({
-        where: { user_id: user.user_id },
+        where: { email: user.email },
       });
 
       if (!userFound) {

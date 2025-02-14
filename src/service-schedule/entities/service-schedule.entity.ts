@@ -1,10 +1,14 @@
 import { Service } from 'src/services/entities/service.entity';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -17,14 +21,23 @@ export class ServiceSchedule {
   service: Service;
 
   @Column({ type: 'time' })
-  start_time: string; // Solo hora (ej: '08:00')
+  start_time: string;
 
   @Column({ type: 'time' })
-  ending_time: string; // Solo hora (ej: '09:30')
+  ending_time: string;
 
   @Column({ type: 'date' })
-  schedule_date: Date; // Fecha completa (ej: '2024-09-08')
+  schedule_date: Date;
 
-  @Column()
-  isAvailable: boolean;
+  @Column({ type: 'boolean', default: true })
+  isAvailable: boolean; // Campo para verificar disponibilidad
+
+  @OneToMany(() => Transaction, (transaction) => transaction.schedule)
+  transactions: Transaction[];
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

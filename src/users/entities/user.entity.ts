@@ -1,5 +1,7 @@
+import { Order } from 'src/orders/entities/order.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { Service } from 'src/services/entities/service.entity';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
 import {
   Column,
   CreateDateColumn,
@@ -46,4 +48,10 @@ export class User {
 
   @OneToMany(() => Product, (product) => product.seller)
   products: Product[];
+
+  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  transactions: Transaction[];
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
 }

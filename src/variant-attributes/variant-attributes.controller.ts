@@ -8,8 +8,8 @@ import {
   Post,
 } from '@nestjs/common';
 
-import { CreateVariantAttributeDto } from './dto/create-variant-attribute.dto';
-import { UpdateVariantAttributeDto } from './dto/update-variant-attribute.dto';
+import { _CreateVariantAttributeDto } from './dto/create-variant-attribute.dto';
+import { _UpdateVariantAttributeDto } from './dto/update-variant-attribute.dto';
 import { VariantAttributesService } from './variant-attributes.service';
 
 @Controller('variant-attributes')
@@ -19,8 +19,8 @@ export class VariantAttributesController {
   ) {}
 
   @Post()
-  create(@Body() createVariantAttributeDto: CreateVariantAttributeDto) {
-    return this.variantAttributesService.create(createVariantAttributeDto);
+  create(@Body() createVariantAttributeDto: _CreateVariantAttributeDto) {
+    return this.variantAttributesService.create();
   }
 
   @Get()
@@ -36,9 +36,9 @@ export class VariantAttributesController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateVariantAttributeDto: UpdateVariantAttributeDto,
+    @Body() updateVariantAttributeDto: _UpdateVariantAttributeDto,
   ) {
-    return this.variantAttributesService.update(+id, updateVariantAttributeDto);
+    return this.variantAttributesService.update(+id);
   }
 
   @Delete(':id')

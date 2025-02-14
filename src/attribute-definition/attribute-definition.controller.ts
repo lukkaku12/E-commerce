@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 
 import { AttributeDefinitionService } from './attribute-definition.service';
-import { CreateAttributeDefinitionDto } from './dto/create-attribute-definition.dto';
-import { UpdateAttributeDefinitionDto } from './dto/update-attribute-definition.dto';
+import { _CreateAttributeDefinitionDto } from './dto/create-attribute-definition.dto';
+import { _UpdateAttributeDefinitionDto } from './dto/update-attribute-definition.dto';
 
 @Controller('attribute-definition')
 export class AttributeDefinitionController {
@@ -19,8 +19,8 @@ export class AttributeDefinitionController {
   ) {}
 
   @Post()
-  create(@Body() createAttributeDefinitionDto: CreateAttributeDefinitionDto) {
-    return this.attributeDefinitionService.create(createAttributeDefinitionDto);
+  create(@Body() createAttributeDefinitionDto: _CreateAttributeDefinitionDto) {
+    return this.attributeDefinitionService.create();
   }
 
   @Get()
@@ -36,11 +36,10 @@ export class AttributeDefinitionController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateAttributeDefinitionDto: UpdateAttributeDefinitionDto,
+    @Body() updateAttributeDefinitionDto: _UpdateAttributeDefinitionDto,
   ) {
     return this.attributeDefinitionService.update(
       +id,
-      updateAttributeDefinitionDto,
     );
   }
 

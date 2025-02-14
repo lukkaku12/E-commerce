@@ -23,10 +23,10 @@ export class Service {
   @Column()
   service_price: number;
 
-  @Column('datetime')
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
-
-  @Column('datetime')
+  
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updated_at: Date;
 
   @ManyToOne(() => User, (user) => user.service)

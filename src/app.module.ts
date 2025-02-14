@@ -6,6 +6,8 @@ import { redisStore } from 'cache-manager-redis-yet';
 
 import { AttributeDefinitionModule } from './attribute-definition/attribute-definition.module';
 import { AttributeDefinition } from './attribute-definition/entities/attribute-definition.entity';
+import { OrderItemsModule } from './order-items/order-items.module';
+import { OrdersModule } from './orders/orders.module';
 import { Product } from './products/entities/product.entity';
 import { ProductsModule } from './products/products.module';
 import { ProductVariant } from './productVariants/entities/product-variant.entity';
@@ -14,10 +16,16 @@ import { SeedersModule } from './seeders/seeders.module';
 import { ServiceScheduleModule } from './service-schedule/service-schedule.module';
 import { Service } from './services/entities/service.entity';
 import { ServicesModule } from './services/services.module';
+import { TransactionsModule } from './transactions/transactions.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { VariantAttribute } from './variant-attributes/entities/variant-attribute.entity';
 import { VariantAttributesModule } from './variant-attributes/variant-attributes.module';
+import { BookingModule } from './booking-service/booking-service.module';
+import { Transaction } from './transactions/entities/transaction.entity';
+import { Order } from './orders/entities/order.entity';
+import { ServiceSchedule } from './service-schedule/entities/service-schedule.entity';
+import { OrderItem } from './order-items/entities/order-item.entity';
 
 @Module({
   imports: [
@@ -50,6 +58,11 @@ import { VariantAttributesModule } from './variant-attributes/variant-attributes
           ProductVariant,
           VariantAttribute,
           AttributeDefinition,
+          Transaction,
+          Order,
+          ServiceSchedule,
+          OrderItem,
+          
         ],
         synchronize: true,
         ssl: {
@@ -65,6 +78,10 @@ import { VariantAttributesModule } from './variant-attributes/variant-attributes
     AttributeDefinitionModule,
     ServiceScheduleModule,
     SeedersModule,
+    TransactionsModule,
+    OrdersModule,
+    OrderItemsModule,
+    BookingModule,
   ],
 })
 export class AppModule {}
