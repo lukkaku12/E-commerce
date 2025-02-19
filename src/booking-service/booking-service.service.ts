@@ -40,6 +40,7 @@ export class BookingService {
       schedule.service.service_price,
       `Reserva de ${schedule.service.service_name}`,
       userId,
+      { scheduleId },
     );
 
     // 4. Marcar horario como reservado (pero no disponible hasta confirmación)
