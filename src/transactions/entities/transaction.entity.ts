@@ -40,7 +40,7 @@ export class Transaction {
   transaction_amount: number;
 
   @Column({ nullable: true }) // Ahora opcional
-  currency_id?: number;
+  currency_id?: string;
 
   @Column({ nullable: true }) // Ahora opcional
   payment_method_id?: string;

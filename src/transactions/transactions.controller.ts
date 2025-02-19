@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Headers, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Headers, HttpStatus, Post, Query, Res } from '@nestjs/common';
 
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { TransactionsService } from './transactions.service';
+import { Response } from 'express';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -11,10 +12,11 @@ export class TransactionsController {
    * Crea un pago y retorna el enlace de Mercado Pago.
    */
   @Post()
-  async createPayment(@Body() createPaymentDto: CreateTransactionDto) {
+  async createPayment(@Body() createPaymentDto: CreateTransactionDto, metadata: any) {
     const { amount, description, userId } = createPaymentDto;
-    return this.transactionsService.createPayment(amount, description, userId);
+    return this.transactionsService.createPayment(amount, description, userId, metadata);
   }
+  // metadata sera el objeto con el scheduleId o el orderId
 
   /**
    * Maneja el webhook de Mercado Pago.
@@ -23,6 +25,7 @@ export class TransactionsController {
   async handleWebhook(
     @Headers('x-signature') signature: string,
     @Body() data: any,
+    @Res() res: Response
   ) {
     return this.transactionsService.handleWebhook(data);
   }

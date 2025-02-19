@@ -40,7 +40,6 @@ export class BookingService {
       schedule.service.service_price,
       `Reserva de ${schedule.service.service_name}`,
       userId,
-      { scheduleId: schedule.schedule_id } // Metadata para el webhook
     );
 
     // 4. Marcar horario como reservado (pero no disponible hasta confirmación)
@@ -58,5 +57,6 @@ export class BookingService {
         date: schedule.schedule_date,
       }
     };
+    // tras bambalinas mercado pago hará la actualizacion del pago
   }
 }

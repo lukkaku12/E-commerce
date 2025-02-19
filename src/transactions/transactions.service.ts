@@ -31,7 +31,7 @@ export class TransactionsService {
     amount: number,
     description: string,
     userId: number,
-    metadata?: Record<string, any>,
+    metadata: Record<string, any>,
   ) {
     // 1. Crear preferencia en Mercado Pago
     const preference = new Preference(this.client);
@@ -44,7 +44,7 @@ export class TransactionsService {
             id: itemId,
             title: description,
             quantity: 1,
-            currency_id: 'COP', // Moneda en pesos colombianos
+            currency_id: 'COP',
             unit_price: amount,
           },
         ],
@@ -54,7 +54,6 @@ export class TransactionsService {
           pending: `${this.configService.get('APP_URL')}/transactions/pending`,
         },
         auto_return: 'approved', // Redirige automáticamente si el pago es exitoso
-        metadata: metadata,
         notification_url: `${this.configService.get(
           'APP_URL',
         )}/transactions/webhook`, // Webhook para actualizaciones
@@ -67,42 +66,195 @@ export class TransactionsService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
+    const registryData: any = {};
+
+    // Verificar si metadata contiene scheduleId u orderId
+    if (metadata.scheduleId) {
+      registryData.service_schedule_id = metadata.scheduleId;
+    } else if (metadata.orderId) {
+      registryData.order_id = metadata.orderId;
+    }
+
     // 2. Registrar transacción en la base de datos
     const transaction = this.transactionRepository.create({
       user,
       description,
       status: 'pending', // Estado inicial
       mercado_pago_id: response.id, // ID de la preferencia en Mercado Pago
-      metadata,
       transaction_date: new Date(),
-      transaction_amount: amount
+      transaction_amount: amount,
+      ...registryData, // Agregar dinámicamente el campo correspondiente
     });
+
     await this.transactionRepository.save(transaction);
 
     // 3. Retornar el enlace de pago
     return response.init_point;
   }
 
-  /**
-   * Maneja el webhook de Mercado Pago para actualizar el estado de la transacción.
-   */
   async handleWebhook(data: any) {
-    // 1. Obtener el ID del pago desde el webhook
-    const paymentId = data.data.id;
+    console.log('📩 Webhook recibido:', JSON.stringify(data, null, 2));
 
-    // 2. Obtener los detalles del pago desde Mercado Pago
-    const payment = new Payment(this.client);
-    const paymentInfo = await payment.get({ id: paymentId });
+    if (!data || (!data.resource && !data.data?.id)) {
+      console.error('❌ Webhook vacío o con estructura incorrecta.');
+      return;
+    }
 
-    // 3. Actualizar la transacción en la base de datos
-    await this.transactionRepository.update(
-      { mercado_pago_id: paymentInfo.external_reference },
-      {
-        status: paymentInfo.status, // approved, rejected, pending
-        payment_method_id: paymentInfo.payment_method_id, // Método de pago (visa, mastercard, etc.)
-      },
-    );
+    // 1️⃣ Manejo de `merchant_order`
+    if (data.resource && data.topic === 'merchant_order') {
+      console.log(
+        "🔍 Webhook con 'resource', haciendo fetch a:",
+        data.resource,
+      );
 
-    return { ok: true };
+      const transactionDetails = await this.fetchMerchantDetails(data.resource);
+      if (!transactionDetails || !transactionDetails.preference_id) {
+        console.error(
+          '❌ No se pudo obtener información válida de la transacción.',
+        );
+        return;
+      }
+
+      console.log('✅ Datos obtenidos de la API:', transactionDetails);
+
+      const updateData: any = {};
+      if (transactionDetails.payments[0]?.status)
+        updateData.status = transactionDetails.payments[0].status;
+      if (transactionDetails.payments[0]?.date_approved)
+        updateData.date_approved = transactionDetails.payments[0].date_approved;
+      if (transactionDetails.collector?.email)
+        updateData.payer_email = transactionDetails.collector.email;
+
+      if (Object.keys(updateData).length > 0) {
+        await this.transactionRepository.update(
+          { mercado_pago_id: transactionDetails.preference_id },
+          updateData,
+        );
+        console.log(
+          '✅ Transacción actualizada correctamente en la base de datos.',
+        );
+      }
+    }
+
+    // 2️⃣ Manejo de `payment.created`
+    else if (data.data?.id && data.action === 'payment.created') {
+      console.log("🔍 Webhook con 'data.id', consultando detalles del pago.");
+
+      const paymentDetails = await this.fetchTransactionDetails(data.data.id);
+      if (!paymentDetails || !paymentDetails.payer) {
+        console.error('❌ No se pudo obtener detalles del pago.');
+        return;
+      }
+      const email = paymentDetails.payer.email;
+      const payment_method_id = paymentDetails.payment_method_id;
+      const currency_id = paymentDetails.currency_id;
+      const orderId = paymentDetails.order?.id;
+
+      if (orderId) {
+        const merchantDetails = await this.fetchMerchantDetails(
+          `https://api.mercadolibre.com/merchant_orders/${orderId}`,
+        );
+        if (!merchantDetails || !merchantDetails.preference_id) {
+          console.error('❌ No se pudo obtener información del pedido.');
+          return;
+        }
+
+        const updateData: any = {};
+        if (email) updateData.payer_email = email;
+        if (payment_method_id) updateData.payment_method_id = payment_method_id;
+        if (currency_id) updateData.currency_id = currency_id;
+
+        if (Object.keys(updateData).length > 0) {
+          await this.transactionRepository.update(
+            { mercado_pago_id: merchantDetails.preference_id },
+            updateData,
+          );
+          console.log(
+            '✅ Transacción actualizada correctamente con la nueva información.',
+          );
+        }
+      }
+    }
+
+    // 3️⃣ Manejo de `payment`
+    else if (data.resource && data.topic === 'payment') {
+      console.log(
+        "🔍 Webhook con 'resource' de tipo 'payment', consultando detalles del pago.",
+      );
+
+      const paymentDetails = await this.fetchTransactionDetails(data.resource);
+      if (!paymentDetails || !paymentDetails.payer) {
+        console.error('❌ No se pudo obtener detalles del pago.');
+        return;
+      }
+
+      const email = paymentDetails.payer.email;
+      const payment_method_id = paymentDetails.payment_method_id;
+      const currency_id = paymentDetails.currency_id;
+      const orderId = paymentDetails.order?.id;
+
+      if (orderId) {
+        const merchantDetails = await this.fetchMerchantDetails(
+          `https://api.mercadolibre.com/merchant_orders/${orderId}`,
+        );
+        if (!merchantDetails || !merchantDetails.preference_id) {
+          console.error('❌ No se pudo obtener información del pedido.');
+          return;
+        }
+
+        const updateData: any = {};
+        if (email) updateData.payer_email = email;
+        if (payment_method_id) updateData.payment_method_id = payment_method_id;
+        if (currency_id) updateData.currency_id = currency_id;
+
+        if (Object.keys(updateData).length > 0) {
+          await this.transactionRepository.update(
+            { mercado_pago_id: merchantDetails.preference_id },
+            updateData,
+          );
+          console.log(
+            '✅ Transacción actualizada correctamente con la nueva información.',
+          );
+        }
+      }
+    }
+  }
+
+  async fetchTransactionDetails(id: string) {
+    try {
+      const url = id.startsWith('http')
+        ? id
+        : `https://api.mercadopago.com/v1/payments/${id}`;
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${process.env.MERCADO_PAGO_ACCESS_TOKEN}`,
+        },
+        method: 'GET',
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('❌ Error obteniendo datos de Mercado Pago:', error);
+      return null;
+    }
+  }
+
+  async fetchMerchantDetails(merchantUrl: string) {
+    try {
+      const url = merchantUrl.startsWith('http')
+        ? merchantUrl
+        : `https://api.mercadolibre.com/merchant_orders/${merchantUrl}`;
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${process.env.MERCADO_PAGO_ACCESS_TOKEN}`,
+        },
+        method: 'GET',
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('❌ Error obteniendo detalles del merchant:', error);
+      return null;
+    }
   }
 }
