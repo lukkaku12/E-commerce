@@ -6,6 +6,9 @@ import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 
 import { Transaction } from './entities/transaction.entity';
+import { ServiceSchedule } from 'src/service-schedule/entities/service-schedule.entity';
+import { Order } from 'src/orders/entities/order.entity';
+import { ServiceScheduleService } from 'src/service-schedule/service-schedule.service';
 
 @Injectable()
 export class TransactionsService {
@@ -17,6 +20,7 @@ export class TransactionsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService,
+    private readonly serviceScheduleService: ServiceScheduleService,
   ) {
     // Configuración de Mercado Pago
     this.client = new MercadoPagoConfig({
@@ -92,6 +96,79 @@ export class TransactionsService {
     return response.init_point;
   }
 
+  async refundPayment(idOfProductPurchased: number) {
+    const transactionToRefund = await this.findTransactionByReference(
+      idOfProductPurchased,
+    );
+
+    if (!transactionToRefund) {
+      console.error('�� Transacción no encontrada.');
+      return;
+    }
+
+    const serviceSchedule = await this.serviceScheduleService.findOne(
+      Number(transactionToRefund.schedule),
+    );
+    if (!serviceSchedule) {
+      console.error('�� Item de orden o fecha de servicio no encontrado.');
+      return;
+    }
+
+    if (serviceSchedule) {
+      const updatedSchedule = {
+        ...serviceSchedule,
+        isAvailable: true,
+      };
+
+      const responseFromDB = await this.serviceScheduleService.save(updatedSchedule);
+
+      if (responseFromDB) {
+        console.log('service Schedule updated')
+      }
+    }
+
+    const payment_id = transactionToRefund.payment_id;
+
+    const response = await fetch(
+      `https://api.mercadopago.com/v1/payments/${payment_id}/refunds`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.MERCADO_PAGO_ACCESS_TOKEN}`,
+        },
+      },
+    );
+
+    const refundData = await response.json();
+
+    if (!response.ok) {
+      console.error('❌ Error al procesar el reembolso:', refundData);
+      return;
+    }
+
+    console.log('✅ Reembolso exitoso:', refundData);
+
+    // 3️⃣ Registrar el nuevo reembolso como una transacción separada
+    const refundTransaction = this.transactionRepository.create({
+      user: transactionToRefund.user,
+      description: `Reembolso de ${transactionToRefund.description}`,
+      status: 'refunded',
+      payment_id: refundData.payment_id,
+      mercado_pago_id: transactionToRefund.mercado_pago_id,
+      transaction_date: new Date(refundData.date_created),
+      transaction_amount: -refundData.amount, // Monto negativo para indicar reembolso
+      metadata: {
+        refund_id: refundData.id,
+        PaymentId: transactionToRefund.transaction_id,
+      },
+      created_at: new Date(),
+    });
+
+    await this.transactionRepository.save(refundTransaction);
+    console.log('✅ Reembolso registrado en la base de datos.');
+  }
+
   async handleWebhook(data: any) {
     console.log('📩 Webhook recibido:', JSON.stringify(data, null, 2));
 
@@ -124,6 +201,8 @@ export class TransactionsService {
         updateData.date_approved = transactionDetails.payments[0].date_approved;
       if (transactionDetails.collector?.email)
         updateData.payer_email = transactionDetails.collector.email;
+      if (transactionDetails.payments[0]?.id)
+        updateData.payment_id = transactionDetails.payments[0].id;
 
       if (Object.keys(updateData).length > 0) {
         await this.transactionRepository.update(
@@ -256,5 +335,22 @@ export class TransactionsService {
       console.error('❌ Error obteniendo detalles del merchant:', error);
       return null;
     }
+  }
+
+  async findTransactionByReference(referenceId: number) {
+    const transaction = await this.transactionRepository.findOne({
+      where: [
+        { order: { order_id: referenceId } },
+        { schedule: { schedule_id: referenceId } },
+      ],
+    });
+
+    if (!transaction) {
+      throw new NotFoundException(
+        'No se encontró una transacción para este ID.',
+      );
+    }
+
+    return transaction;
   }
 }

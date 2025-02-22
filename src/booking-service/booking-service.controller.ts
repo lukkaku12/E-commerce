@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'auth/guards/jwt/jwt-auth.guard';
 
 import { BookingService } from './booking-service.service';
@@ -53,5 +53,9 @@ export class BookingController {
     @Body('scheduleId') scheduleId: number,
   ) {
     return this.bookingService.bookService(userId, scheduleId);
+  }
+  @Post('refund')
+  async refundBooking(@Body('parameterId') parameterId: number) {
+    return this.bookingService.refundBooking(parameterId);
   }
 }

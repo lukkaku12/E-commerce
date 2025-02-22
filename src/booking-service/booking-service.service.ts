@@ -60,4 +60,11 @@ export class BookingService {
     };
     // tras bambalinas mercado pago hará la actualizacion del pago
   }
+
+  async refundBooking(parameterId: number) {
+
+    await this.transactionsService.refundPayment(parameterId);
+    
+
+  }
 }

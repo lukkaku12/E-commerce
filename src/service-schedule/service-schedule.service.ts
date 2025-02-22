@@ -78,7 +78,7 @@ export class ServiceScheduleService {
 
     const schedule = await this.scheduleRepository.findOne({
       where: { schedule_id: id },
-      relations: ['service'],
+      // relations: ['service'], not needed
     });
 
     if (!schedule) {
@@ -140,5 +140,9 @@ export class ServiceScheduleService {
     if (result.affected === 0) {
       throw new NotFoundException(`Service schedule with ID ${id} not found`);
     }
+  }
+
+  async save(serviceSchedule: ServiceSchedule) {
+    return await this.scheduleRepository.save(serviceSchedule)
   }
 }
