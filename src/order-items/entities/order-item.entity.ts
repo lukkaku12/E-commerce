@@ -1,5 +1,6 @@
 import { Order } from 'src/orders/entities/order.entity';
 import { Product } from 'src/products/entities/product.entity';
+import { ProductVariant } from 'src/productVariants/entities/product-variant.entity';
 import {
   Column,
   CreateDateColumn,
@@ -19,9 +20,9 @@ export class OrderItem {
   @JoinColumn({ name: 'order_id' })
   order: Order;
 
-  @ManyToOne(() => Product, (product) => product.orderItems)
+  @ManyToOne(() => ProductVariant, (productVariant) => productVariant.orderItems)
   @JoinColumn({ name: 'product_id' })
-  product: Product;
+  productVariant: ProductVariant;
 
   @Column({ type: 'int' })
   quantity: number; // Cantidad del producto

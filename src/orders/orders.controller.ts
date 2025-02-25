@@ -6,38 +6,28 @@ import {
   Param,
   Patch,
   Post,
+  Req,
 } from '@nestjs/common';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrdersService } from './orders.service';
+import { JwtPayload } from 'auth/auth.service';
+import { Request } from 'express';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+  create(@Body() createOrderDto: CreateOrderDto, @Req() req: Request ) {
+    const user = req.user as JwtPayload;
+    return this.ordersService.createOrderFromCart(user.sub);
   }
 
-  @Get()
-  findAll() {
-    return this.ordersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ordersService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.ordersService.remove(+id);
+  // }
+  // cuando se haga devolucion de ordenes ahi si se borra o se cambia el registro de transaccion
 }

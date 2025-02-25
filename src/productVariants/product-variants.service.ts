@@ -94,4 +94,10 @@ export class ProductVariantsService {
       throw new NotFoundException(`Product variant with ID ${id} not found`);
     }
   }
+
+  async updateStock(variantId: number, quantityToDiscount: number): Promise<void> {
+    await this.productVariantRepository.update(variantId, {
+      stock: () => `stock - ${quantityToDiscount}`,
+  });
+  }
 }

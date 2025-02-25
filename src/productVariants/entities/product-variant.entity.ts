@@ -1,3 +1,5 @@
+import { CartItem } from 'src/cart-item-id/entities/cart-item-id.entity';
+import { OrderItem } from 'src/order-items/entities/order-item.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { VariantAttribute } from 'src/variant-attributes/entities/variant-attribute.entity';
 import {
@@ -39,4 +41,10 @@ export class ProductVariant {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updated_at: Date;
+  // En ProductVariant.ts
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.productVariant)
+  orderItems: OrderItem[];
+
+  @OneToMany(() => CartItem, (cartItem) => cartItem.productVariant)
+  cartItems: CartItem[];
 }

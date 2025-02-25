@@ -26,6 +26,10 @@ import { Transaction } from './transactions/entities/transaction.entity';
 import { Order } from './orders/entities/order.entity';
 import { ServiceSchedule } from './service-schedule/entities/service-schedule.entity';
 import { OrderItem } from './order-items/entities/order-item.entity';
+import { UserCartModule } from './user-cart/user-cart.module';
+import { CartItemIdModule } from './cart-item-id/cart-item-id.module';
+import { CartItem } from './cart-item-id/entities/cart-item-id.entity';
+import { UserCart } from './user-cart/entities/user-cart.entity';
 
 @Module({
   imports: [
@@ -62,6 +66,8 @@ import { OrderItem } from './order-items/entities/order-item.entity';
           Order,
           ServiceSchedule,
           OrderItem,
+          CartItem,
+          UserCart
           
         ],
         synchronize: true,
@@ -82,6 +88,8 @@ import { OrderItem } from './order-items/entities/order-item.entity';
     OrdersModule,
     OrderItemsModule,
     BookingModule,
+    UserCartModule,
+    CartItemIdModule,
   ],
 })
 export class AppModule {}

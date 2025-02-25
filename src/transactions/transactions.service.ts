@@ -35,7 +35,7 @@ export class TransactionsService {
     amount: number,
     description: string,
     userId: number,
-    metadata: Record<string, any>,
+    metadata?: Record<string, any>,
   ) {
     // 1. Crear preferencia en Mercado Pago
     const preference = new Preference(this.client);

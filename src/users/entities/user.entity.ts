@@ -2,6 +2,7 @@ import { Order } from 'src/orders/entities/order.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { Service } from 'src/services/entities/service.entity';
 import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { UserCart } from 'src/user-cart/entities/user-cart.entity';
 import {
   Column,
   CreateDateColumn,
@@ -54,4 +55,7 @@ export class User {
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @OneToMany(() => UserCart, (cart) => cart.user)
+  carts: UserCart[];
 }

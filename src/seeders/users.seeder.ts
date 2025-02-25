@@ -25,6 +25,7 @@ export default class UserSeeder {
         service: [],
         transactions: [],
         orders: [],
+        carts: [],
       },
       {
         name: 'María Gómez',
@@ -37,6 +38,7 @@ export default class UserSeeder {
         service: [],
         transactions: [],
         orders: [],
+        carts: [],
       },
       {
         name: 'Carlos López',
@@ -49,6 +51,7 @@ export default class UserSeeder {
         service: [],
         transactions: [],
         orders: [],
+        carts: [],
       },
       {
         name: 'Ana Martínez',
@@ -61,6 +64,7 @@ export default class UserSeeder {
         service: [],
         transactions: [],
         orders: [],
+        carts: [],
       },
     ];
 
