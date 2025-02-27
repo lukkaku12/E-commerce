@@ -1,13 +1,11 @@
-import { Injectable } from '@nestjs/common';
-
-import { CreateOrderItemDto } from './dto/create-order-item.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CartItem } from 'src/cart-item-id/entities/cart-item-id.entity';
+import { Order } from 'src/orders/entities/order.entity';
+import { ProductVariantsService } from 'src/productVariants/product-variants.service';
+import { Repository } from 'typeorm';
 import { UpdateOrderItemDto } from './dto/update-order-item.dto';
 import { OrderItem } from './entities/order-item.entity';
-import { Repository } from 'typeorm';
-import { CartItem } from 'src/cart-item-id/entities/cart-item-id.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ProductVariantsService } from 'src/productVariants/product-variants.service';
-import { Order } from 'src/orders/entities/order.entity';
 
 @Injectable()
 export class OrderItemsService {
@@ -16,24 +14,33 @@ export class OrderItemsService {
     private readonly orderItemsRepository: Repository<OrderItem>,
     private readonly productVariantService: ProductVariantsService,
   ) {}
-  create(createOrderItemDto: CreateOrderItemDto) {
-    return 'This action adds a new orderItem';
+  async findAll() {
+    return this.orderItemsRepository.find({ relations: ['order', 'productVariant'] });
   }
 
-  findAll() {
-    return `This action returns all orderItems`;
+  async findOne(idOfOrder: number) {
+    const orderItem = await this.orderItemsRepository.findOne({
+      where: { order: { order_id: idOfOrder }},
+      relations: ['order', 'productVariant'],
+    });
+
+    if (!orderItem) {
+      throw new NotFoundException(`OrderItem con ID ${idOfOrder} no encontrado`);
+    }
+
+    return orderItem;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} orderItem`;
+  async update(id: number, updateOrderItemDto: UpdateOrderItemDto) {
+    const orderItem = await this.findOne(id);
+
+    Object.assign(orderItem, updateOrderItemDto);
+    return this.orderItemsRepository.save(orderItem);
   }
 
-  update(id: number, updateOrderItemDto: UpdateOrderItemDto) {
-    return `This action updates a #${id} orderItem`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} orderItem`;
+  async remove(id: number) {
+    const orderItem = await this.findOne(id);
+    return this.orderItemsRepository.remove(orderItem);
   }
 
   async createOrderItems(

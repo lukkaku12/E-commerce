@@ -1,5 +1,3 @@
-import { CartItem } from 'src/cart-item-id/entities/cart-item-id.entity';
-import { OrderItem } from 'src/order-items/entities/order-item.entity';
 import { ProductVariant } from 'src/productVariants/entities/product-variant.entity';
 import { User } from 'src/users/entities/user.entity';
 import {

@@ -23,7 +23,9 @@ export class Transaction {
   @JoinColumn({ name: 'order_id' })
   order?: Order;
 
-  @ManyToOne(() => ServiceSchedule, (schedule) => schedule.transactions, { nullable: true }) // Ahora es opcional
+  @ManyToOne(() => ServiceSchedule, (schedule) => schedule.transactions, {
+    nullable: true,
+  }) // Ahora es opcional
   @JoinColumn({ name: 'service_schedule_id' })
   schedule?: ServiceSchedule;
 

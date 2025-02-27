@@ -143,6 +143,6 @@ export class ServiceScheduleService {
   }
 
   async save(serviceSchedule: ServiceSchedule) {
-    return await this.scheduleRepository.save(serviceSchedule)
+    return await this.scheduleRepository.save(serviceSchedule);
   }
 }

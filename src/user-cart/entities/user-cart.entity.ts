@@ -1,15 +1,23 @@
-import { CartItem } from "src/cart-item-id/entities/cart-item-id.entity";
-import { User } from "src/users/entities/user.entity";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, JoinColumn } from "typeorm";
+import { CartItem } from 'src/cart-item-id/entities/cart-item-id.entity';
+import { User } from 'src/users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-
-@Entity("user_cart")
+@Entity('user_cart')
 export class UserCart {
   @PrimaryGeneratedColumn()
   cart_id: number;
 
   @ManyToOne(() => User, (user) => user.carts)
-  @JoinColumn({name: 'user_id'})
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @CreateDateColumn()
@@ -19,13 +27,13 @@ export class UserCart {
   updated_at: Date;
 
   @Column({
-    type: "enum",
-    enum: ["active", "abandoned", "completed"],
-    default: "active",
+    type: 'enum',
+    enum: ['active', 'abandoned', 'completed'],
+    default: 'active',
   })
-  status: "active" | "abandoned" | "completed";
+  status: 'active' | 'abandoned' | 'completed';
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
-  @JoinColumn({name: 'cart_item_id'})
+  @JoinColumn({ name: 'cart_item_id' })
   cartItems: CartItem[];
 }

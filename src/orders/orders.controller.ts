@@ -1,26 +1,15 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Req,
-} from '@nestjs/common';
-
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { OrdersService } from './orders.service';
+import { Controller, Post, Req } from '@nestjs/common';
 import { JwtPayload } from 'auth/auth.service';
 import { Request } from 'express';
+
+import { OrdersService } from './orders.service';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto, @Req() req: Request ) {
+  create(@Req() req: Request) {
     const user = req.user as JwtPayload;
     return this.ordersService.createOrderFromCart(user.sub);
   }

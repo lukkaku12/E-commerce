@@ -1,14 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
+import { MercadoPagoConfig, Preference } from 'mercadopago';
+import { ServiceScheduleService } from 'src/service-schedule/service-schedule.service';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 
 import { Transaction } from './entities/transaction.entity';
-import { ServiceSchedule } from 'src/service-schedule/entities/service-schedule.entity';
-import { Order } from 'src/orders/entities/order.entity';
-import { ServiceScheduleService } from 'src/service-schedule/service-schedule.service';
 
 @Injectable()
 export class TransactionsService {
@@ -120,10 +118,12 @@ export class TransactionsService {
         isAvailable: true,
       };
 
-      const responseFromDB = await this.serviceScheduleService.save(updatedSchedule);
+      const responseFromDB = await this.serviceScheduleService.save(
+        updatedSchedule,
+      );
 
       if (responseFromDB) {
-        console.log('service Schedule updated')
+        console.log('service Schedule updated');
       }
     }
 

@@ -1,13 +1,10 @@
-import { Inject, Injectable, RequestTimeoutException } from '@nestjs/common';
-
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { UserCartService } from 'src/user-cart/user-cart.service';
+import { Injectable, RequestTimeoutException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Order } from './entities/order.entity';
-import { Repository } from 'typeorm';
-import { TransactionsService } from 'src/transactions/transactions.service';
 import { OrderItemsService } from 'src/order-items/order-items.service';
+import { TransactionsService } from 'src/transactions/transactions.service';
+import { UserCartService } from 'src/user-cart/user-cart.service';
+import { Repository } from 'typeorm';
+import { Order } from './entities/order.entity';
 
 @Injectable()
 export class OrdersService {
@@ -56,5 +53,10 @@ export class OrdersService {
     await this.userCartService.clearCart(userId);
 
     return { success: true, link_pago: paymentLink };
+  }
+
+  async refundOrder(orderId: number) {
+    await this.transactionsService.refundPayment(orderId)
+    return { success: true }
   }
 }

@@ -38,9 +38,7 @@ export class AttributeDefinitionController {
     @Param('id') id: string,
     @Body() updateAttributeDefinitionDto: _UpdateAttributeDefinitionDto,
   ) {
-    return this.attributeDefinitionService.update(
-      +id,
-    );
+    return this.attributeDefinitionService.update(+id);
   }
 
   @Delete(':id')

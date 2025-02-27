@@ -6,30 +6,30 @@ import { redisStore } from 'cache-manager-redis-yet';
 
 import { AttributeDefinitionModule } from './attribute-definition/attribute-definition.module';
 import { AttributeDefinition } from './attribute-definition/entities/attribute-definition.entity';
+import { BookingModule } from './booking-service/booking-service.module';
+import { CartItemIdModule } from './cart-item-id/cart-item-id.module';
+import { CartItem } from './cart-item-id/entities/cart-item-id.entity';
+import { OrderItem } from './order-items/entities/order-item.entity';
 import { OrderItemsModule } from './order-items/order-items.module';
+import { Order } from './orders/entities/order.entity';
 import { OrdersModule } from './orders/orders.module';
 import { Product } from './products/entities/product.entity';
 import { ProductsModule } from './products/products.module';
 import { ProductVariant } from './productVariants/entities/product-variant.entity';
 import { ProductVariantsModule } from './productVariants/product-variants.module';
 import { SeedersModule } from './seeders/seeders.module';
+import { ServiceSchedule } from './service-schedule/entities/service-schedule.entity';
 import { ServiceScheduleModule } from './service-schedule/service-schedule.module';
 import { Service } from './services/entities/service.entity';
 import { ServicesModule } from './services/services.module';
+import { Transaction } from './transactions/entities/transaction.entity';
 import { TransactionsModule } from './transactions/transactions.module';
+import { UserCart } from './user-cart/entities/user-cart.entity';
+import { UserCartModule } from './user-cart/user-cart.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { VariantAttribute } from './variant-attributes/entities/variant-attribute.entity';
 import { VariantAttributesModule } from './variant-attributes/variant-attributes.module';
-import { BookingModule } from './booking-service/booking-service.module';
-import { Transaction } from './transactions/entities/transaction.entity';
-import { Order } from './orders/entities/order.entity';
-import { ServiceSchedule } from './service-schedule/entities/service-schedule.entity';
-import { OrderItem } from './order-items/entities/order-item.entity';
-import { UserCartModule } from './user-cart/user-cart.module';
-import { CartItemIdModule } from './cart-item-id/cart-item-id.module';
-import { CartItem } from './cart-item-id/entities/cart-item-id.entity';
-import { UserCart } from './user-cart/entities/user-cart.entity';
 
 @Module({
   imports: [
@@ -67,8 +67,7 @@ import { UserCart } from './user-cart/entities/user-cart.entity';
           ServiceSchedule,
           OrderItem,
           CartItem,
-          UserCart
-          
+          UserCart,
         ],
         synchronize: true,
         ssl: {

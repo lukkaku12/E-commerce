@@ -95,9 +95,12 @@ export class ProductVariantsService {
     }
   }
 
-  async updateStock(variantId: number, quantityToDiscount: number): Promise<void> {
+  async updateStock(
+    variantId: number,
+    quantityToDiscount: number,
+  ): Promise<void> {
     await this.productVariantRepository.update(variantId, {
       stock: () => `stock - ${quantityToDiscount}`,
-  });
+    });
   }
 }

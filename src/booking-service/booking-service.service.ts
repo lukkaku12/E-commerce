@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceSchedule } from 'src/service-schedule/entities/service-schedule.entity';
+import { TransactionsService } from 'src/transactions/transactions.service';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { TransactionsService } from 'src/transactions/transactions.service';
 
 @Injectable()
 export class BookingService {
@@ -23,11 +23,13 @@ export class BookingService {
     });
 
     if (!schedule) {
-      throw new NotFoundException('El horario seleccionado no está disponible.');
+      throw new NotFoundException(
+        'El horario seleccionado no está disponible.',
+      );
     }
 
     // 2. Obtener el usuario
-    const user = await this.userRepository.findOne({ 
+    const user = await this.userRepository.findOne({
       where: { user_id: userId },
     });
 
@@ -56,15 +58,12 @@ export class BookingService {
         startTime: schedule.start_time,
         endTime: schedule.ending_time,
         date: schedule.schedule_date,
-      }
+      },
     };
     // tras bambalinas mercado pago hará la actualizacion del pago
   }
 
   async refundBooking(parameterId: number) {
-
     await this.transactionsService.refundPayment(parameterId);
-    
-
   }
 }

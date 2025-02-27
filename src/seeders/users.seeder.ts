@@ -1,10 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 
 import { User, UserRole } from '../users/entities/user.entity';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 export default class UserSeeder {
   constructor(
