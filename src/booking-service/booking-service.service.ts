@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceSchedule } from 'src/service-schedule/entities/service-schedule.entity';
+import { ServiceSchedule } from '../service-schedule/entities/service-schedule.entity';
 import { TransactionsService } from 'src/transactions/transactions.service';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -64,6 +64,6 @@ export class BookingService {
   }
 
   async refundBooking(parameterId: number) {
-    await this.transactionsService.refundPayment(parameterId);
+    return await this.transactionsService.refundPayment(parameterId);
   }
 }

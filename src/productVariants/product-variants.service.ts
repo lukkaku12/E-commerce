@@ -6,6 +6,7 @@ import { Product } from '../products/entities/product.entity';
 import { CreateProductVariantDto } from './dto/create-product_variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product_variant.dto';
 import { ProductVariant } from './entities/product-variant.entity';
+import { response } from 'express';
 
 @Injectable()
 export class ProductVariantsService {
@@ -99,8 +100,13 @@ export class ProductVariantsService {
     variantId: number,
     quantityToDiscount: number,
   ): Promise<void> {
-    await this.productVariantRepository.update(variantId, {
+    const response = await this.productVariantRepository.update(variantId, {
       stock: () => `stock - ${quantityToDiscount}`,
     });
+
+    if (response.affected === 0) {
+      throw new NotFoundException(`Product variant with ID ${variantId} not found`);
+    }
+
   }
 }

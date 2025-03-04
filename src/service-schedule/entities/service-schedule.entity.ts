@@ -1,5 +1,5 @@
-import { Service } from 'src/services/entities/service.entity';
-import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { Service } from '../../services/entities/service.entity';
+import { Transaction } from '../../transactions/entities/transaction.entity';
 import {
   Column,
   CreateDateColumn,

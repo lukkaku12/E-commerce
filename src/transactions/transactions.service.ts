@@ -94,7 +94,7 @@ export class TransactionsService {
     return response.init_point;
   }
 
-  async refundPayment(idOfProductPurchased: number) {
+  async refundPayment(idOfProductPurchased: number): Promise<Object> {
     const transactionToRefund = await this.findTransactionByReference(
       idOfProductPurchased,
     );
@@ -166,7 +166,7 @@ export class TransactionsService {
     });
 
     await this.transactionRepository.save(refundTransaction);
-    console.log('✅ Reembolso registrado en la base de datos.');
+    return { message:'✅ Reembolso registrado en la base de datos.'};
   }
 
   async handleWebhook(data: any) {
