@@ -1,24 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { VariantAttribute } from './entities/variant-attribute.entity';
+import { _CreateVariantAttributeDto } from './dto/create-variant-attribute.dto';
+import { _UpdateVariantAttributeDto } from './dto/update-variant-attribute.dto';
 
 @Injectable()
 export class VariantAttributesService {
-  create() {
-    return 'This action adds a new variantAttribute';
+  constructor(
+    @InjectRepository(VariantAttribute)
+    private readonly variantAttributesRepository: Repository<VariantAttribute>,
+  ) {}
+
+  async create(createVariantAttributeDto: _CreateVariantAttributeDto): Promise<VariantAttribute> {
+    const newVariantAttribute = this.variantAttributesRepository.create(createVariantAttributeDto);
+    return await this.variantAttributesRepository.save(newVariantAttribute);
   }
 
-  findAll() {
-    return `This action returns all variantAttributes`;
+  async findAll(): Promise<VariantAttribute[]> {
+    return await this.variantAttributesRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} variantAttribute`;
+  async findOne(id: number): Promise<VariantAttribute> {
+    const variantAttribute = await this.variantAttributesRepository.findOne({ where: { variantId: id } });
+    if (!variantAttribute) {
+      throw new NotFoundException(`VariantAttribute with ID ${id} not found`);
+    }
+    return variantAttribute;
   }
 
-  update(id: number) {
-    return `This action updates a #${id} variantAttribute`;
+  async update(id: number, updateVariantAttributeDto: _UpdateVariantAttributeDto): Promise<VariantAttribute> {
+    const variantAttribute = await this.findOne(id);
+    Object.assign(variantAttribute, updateVariantAttributeDto);
+    return await this.variantAttributesRepository.save(variantAttribute);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} variantAttribute`;
+  async remove(id: number): Promise<void> {
+    const variantAttribute = await this.findOne(id);
+    await this.variantAttributesRepository.remove(variantAttribute);
   }
 }

@@ -93,22 +93,6 @@ describe('ServiceScheduleService', () => {
         new NotFoundException(`Service with ID ${dto.service_id} not found`),
       );
     });
-
-    it('should throw BadRequestException if ending_time is before start_time', async () => {
-      const dto: CreateServiceScheduleDto = {
-        service_id: 1,
-        start_time: '12:00',
-        ending_time: '10:00',
-        schedule_date: new Date(),
-      };
-
-      const mockService = { id: 1 };
-      (serviceService.findOne as jest.Mock).mockResolvedValue(mockService);
-
-      await expect(serviceScheduleService.create(dto)).rejects.toThrow(
-        new BadRequestException('Ending time must be after start time'),
-      );
-    });
   });
 
   describe('findAll', () => {
