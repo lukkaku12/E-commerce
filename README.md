@@ -87,4 +87,8 @@ npm run lint
 # Aplicar formato con Prettier
 npm run format
 ```
+---
+# modelo de base de datos 
+<img width="920" alt="Screenshot 2025-04-24 at 10 26 43 PM" src="https://github.com/user-attachments/assets/22a76e5d-feb2-435c-8434-c749b89d769f" />
+
 
