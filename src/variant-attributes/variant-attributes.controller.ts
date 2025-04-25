@@ -19,10 +19,18 @@ export class VariantAttributesController {
   ) {}
 
   @Post()
-  create(@Body() createVariantAttributeDto: _CreateVariantAttributeDto) {
-    return this.variantAttributesService.create();
-  }
+create(@Body() dto: _CreateVariantAttributeDto) {
+  return this.variantAttributesService.create(dto);
+}
 
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() dto: _UpdateVariantAttributeDto,
+  ) {
+    return this.variantAttributesService.update(+id, dto);
+  }
+  
   @Get()
   findAll() {
     return this.variantAttributesService.findAll();
@@ -31,14 +39,6 @@ export class VariantAttributesController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.variantAttributesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateVariantAttributeDto: _UpdateVariantAttributeDto,
-  ) {
-    return this.variantAttributesService.update(+id);
   }
 
   @Delete(':id')

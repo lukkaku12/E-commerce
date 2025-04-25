@@ -6,6 +6,7 @@ import { ProductVariantsService } from 'src/productVariants/product-variants.ser
 import { Repository } from 'typeorm';
 import { UpdateOrderItemDto } from './dto/update-order-item.dto';
 import { OrderItem } from './entities/order-item.entity';
+import { CreateOrderItemDto } from './dto/create-order-item.dto';
 
 @Injectable()
 export class OrderItemsService {
@@ -29,6 +30,11 @@ export class OrderItemsService {
     }
 
     return orderItem;
+  }
+
+  async create(createOrderItemDto: CreateOrderItemDto): Promise<OrderItem> {
+    const orderItem = this.orderItemsRepository.create(createOrderItemDto);
+    return this.orderItemsRepository.save(orderItem);
   }
 
   async update(id: number, updateOrderItemDto: UpdateOrderItemDto) {

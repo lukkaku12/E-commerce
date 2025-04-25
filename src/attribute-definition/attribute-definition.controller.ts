@@ -20,7 +20,7 @@ export class AttributeDefinitionController {
 
   @Post()
   create(@Body() createAttributeDefinitionDto: _CreateAttributeDefinitionDto) {
-    return this.attributeDefinitionService.create();
+    return this.attributeDefinitionService.create(createAttributeDefinitionDto);
   }
 
   @Get()
@@ -38,7 +38,7 @@ export class AttributeDefinitionController {
     @Param('id') id: string,
     @Body() updateAttributeDefinitionDto: _UpdateAttributeDefinitionDto,
   ) {
-    return this.attributeDefinitionService.update(+id);
+    return this.attributeDefinitionService.update(+id, _CreateAttributeDefinitionDto);
   }
 
   @Delete(':id')
