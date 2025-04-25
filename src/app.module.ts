@@ -37,10 +37,7 @@ import { VariantAttributesModule } from './variant-attributes/variant-attributes
       isGlobal: true,
       useFactory: async () => ({
         store: await redisStore({
-          socket: {
-            host: 'localhost',
-            port: 6379,
-          },
+          url: process.env.REDIS_URL,
         }),
       }),
     }),
