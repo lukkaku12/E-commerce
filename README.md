@@ -13,12 +13,14 @@ API RESTful para un sistema de comercio electrónico, desarrollada con **NestJS*
 - 🔁 CI/CD con **GitHub Actions**
 - 📦 Gestión de dependencias con `npm`
 - 🧼 Linting y formateo con **ESLint** y **Prettier**
+- 💾 Cacheo de resultados con **Redis**
 
 ---
 
 ## ⚙️ Tecnologías
 
 - **Node.js**
+- **Redis**
 - **NestJS**
 - **TypeScript**
 - **Mercado Pago SDK**
