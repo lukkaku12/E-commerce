@@ -12,8 +12,8 @@ async function bootstrap() {
   console.log('Seeding complete.');
 
   const config = new DocumentBuilder()
-    .setTitle('API de Servicios')
-    .setDescription('Sistema de gestión de servicios')
+    .setTitle('E-commerce API')
+    .setDescription('Sistema de gestión de servicios, productos, usuarios, carritos y mas!')
     .setVersion('1.0')
     .addTag('Services')
     .build();
