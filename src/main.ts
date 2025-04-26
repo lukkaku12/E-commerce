@@ -16,6 +16,14 @@ async function bootstrap() {
     .setDescription('Sistema de gestión de servicios, productos, usuarios, carritos y mas!')
     .setVersion('1.0')
     .addTag('Services')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
