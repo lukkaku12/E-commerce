@@ -4,7 +4,7 @@ API RESTful para un sistema de comercio electrónico, desarrollada con **NestJS*
 
 ---
 
-## 🚀 Características principales
+## Características principales
 
 - 🔧 Arquitectura modular con **NestJS**
 - 🧪 Pruebas **unitarias** para múltiples módulos
@@ -57,6 +57,15 @@ Puedes levantar todo el entorno de desarrollo con Docker ejecutando:
 ```bash
 docker-compose up --build
 ```
+
+---
+
+## 🚀 Deployment
+
+puedes revisar la documentacion de los endpoints desplegados [aqui](https://e-commerce-qoi7.onrender.com/api#/)
+
+<img width="951" alt="image" src="https://github.com/user-attachments/assets/8d8dd5b6-10db-4001-afde-456da220e028" />
+
 
 ---
 
