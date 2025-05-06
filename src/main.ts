@@ -7,6 +7,12 @@ import UserSeeder from './seeders/users.seeder';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
+  });
+
   const userSeeder = app.get(UserSeeder);
   await userSeeder.seed();
   console.log('Seeding complete.');
