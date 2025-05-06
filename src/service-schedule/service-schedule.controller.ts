@@ -16,8 +16,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'auth/guards/jwt/jwt-auth.guard';
-import { RolesGuard } from 'auth/guards/roles.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 import { CreateServiceScheduleDto } from './dto/create-service-schedule.dto';
 import { UpdateServiceScheduleDto } from './dto/update-service-schedule.dto';

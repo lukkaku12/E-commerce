@@ -11,9 +11,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'; // Importación de los decoradores de Swagger
-import { JwtPayload } from 'auth/auth.service';
-import { JwtAuthGuard } from 'auth/guards/jwt/jwt-auth.guard';
-import { RolesGuard } from 'auth/guards/roles.guard';
+import { JwtPayload } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Request } from 'express';
 
 import { CreateProductDto } from './dto/create-product.dto';

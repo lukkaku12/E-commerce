@@ -1,6 +1,6 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'auth/guards/jwt/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-auth.guard';
 
 import { BookingService } from './booking-service.service';
 

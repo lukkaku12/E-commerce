@@ -8,7 +8,7 @@ import {
 import { Request } from 'express';
 
 import { OrdersService } from './orders.service';
-import { JwtPayload } from 'auth/auth.service';
+import { JwtPayload } from 'src/auth/auth.service';
 
 @ApiTags('Orders')
 @ApiBearerAuth() // indica que requiere token JWT
