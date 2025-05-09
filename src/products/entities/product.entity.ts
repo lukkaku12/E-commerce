@@ -3,11 +3,13 @@ import { User } from 'src/users/entities/user.entity';
 import {
   BeforeUpdate,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('Product')
@@ -38,14 +40,14 @@ export class Product {
   @OneToMany(() => ProductVariant, (product_variant) => product_variant.product)
   product_variants: ProductVariant[];
 
-  @Column('timestamp')
+  @CreateDateColumn()
   created_at: Date;
 
-  @Column('timestamp')
+  @UpdateDateColumn()
   updated_at: Date;
 
-  @BeforeUpdate()
-  updateTimestamp() {
-    this.updated_at = new Date();
-  }
+  // @BeforeUpdate()
+  // updateTimestamp() {
+  //   this.updated_at = new Date();
+  // }
 }
