@@ -39,6 +39,34 @@ export class ProductVariantsService {
     return await this.productVariantRepository.save(newVariant);
   }
 
+  async createMany(dtos: CreateProductVariantDto[]): Promise<ProductVariant[]> {
+  const variants: ProductVariant[] = [];
+
+  for (const dto of dtos) {
+    // 1. Validar que el producto exista
+    const product = await this.productRepository.findOne({
+      where: { product_id: dto.product_id },
+    });
+
+    if (!product) {
+      throw new NotFoundException(
+        `Product with ID ${dto.product_id} not found`
+      );
+    }
+
+    // 2. Crear la variante asociando el producto completo
+    const variant = this.productVariantRepository.create({
+      ...dto,
+      product: product,
+    });
+
+    variants.push(variant);
+  }
+
+  // 3. Guardar todas las variantes en una sola operación
+  return await this.productVariantRepository.save(variants);
+}
+
   async findAll(): Promise<ProductVariant[]> {
     return await this.productVariantRepository.find({
       relations: ['product', 'variantAttributes'],

@@ -12,11 +12,13 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBody,
+  getSchemaPath,
 } from '@nestjs/swagger';
 
 import { CreateProductVariantDto } from './dto/create-product_variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product_variant.dto';
 import { ProductVariantsService } from './product-variants.service';
+import { ProductVariant } from './entities/product-variant.entity';
 
 @ApiTags('Product Variants')
 @Controller('product-variants')
@@ -24,35 +26,56 @@ export class ProductVariantsController {
   constructor(private readonly variantsService: ProductVariantsService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear una variante de producto' })
-  @ApiResponse({ status: 201, description: 'Variante creada con éxito' })
+  @ApiOperation({ summary: 'Crear una o más variantes de producto' })
   @ApiBody({
-    description: 'Datos para crear una variante de producto',
-    type: CreateProductVariantDto,
-    examples: {
-      ejemplo: {
-        summary: 'Ejemplo de variante',
-        value: {
-          name: 'Talla M',
-          price: 29.99,
-          stock: 100,
-          productId: 1,
+    description: 'Una o más variantes para asociar a un producto',
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(CreateProductVariantDto) },
+        {
+          type: 'array',
+          items: { $ref: getSchemaPath(CreateProductVariantDto) },
         },
-      },
+      ],
     },
   })
-  create(@Body() createDto: CreateProductVariantDto) {
-    return this.variantsService.create(createDto);
+  @ApiResponse({
+    status: 201,
+    description: 'Variante(s) creada(s) exitosamente',
+    type: ProductVariant,
+    isArray: true,
+  })
+  async create(@Body() body: CreateProductVariantDto | CreateProductVariantDto[]) {
+    if (Array.isArray(body)) {
+      return this.variantsService.createMany(body);
+    } else {
+      return this.variantsService.create(body);
+    }
   }
 
   @Get()
   @ApiOperation({ summary: 'Listar todas las variantes de productos' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de variantes de productos',
+    type: ProductVariant,
+    isArray: true,
+  })
   findAll() {
     return this.variantsService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una variante específica por ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Detalles de la variante de producto',
+    type: ProductVariant,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Variante no encontrada',
+  })
   findOne(@Param('id') id: string) {
     return this.variantsService.findOne(+id);
   }
@@ -73,12 +96,29 @@ export class ProductVariantsController {
       },
     },
   })
+  @ApiResponse({
+    status: 200,
+    description: 'Variante actualizada correctamente',
+    type: ProductVariant,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Variante no encontrada',
+  })
   update(@Param('id') id: string, @Body() updateDto: UpdateProductVariantDto) {
     return this.variantsService.update(+id, updateDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar una variante de producto por ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Variante eliminada correctamente',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Variante no encontrada',
+  })
   remove(@Param('id') id: string) {
     return this.variantsService.remove(+id);
   }

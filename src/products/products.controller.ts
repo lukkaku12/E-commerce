@@ -10,7 +10,14 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'; // Importación de los decoradores de Swagger
+import {
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiQuery,
+  ApiBody,
+} from '@nestjs/swagger';
 import { JwtPayload } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -19,8 +26,9 @@ import { Request } from 'express';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
+import { Product } from './entities/product.entity'; // Asegúrate de tener esta clase documentada
 
-@ApiTags('Products') // Categoriza el controlador en la documentación Swagger
+@ApiTags('Products')
 @Controller('products')
 @UseGuards(JwtAuthGuard)
 export class ProductsController {
@@ -28,16 +36,34 @@ export class ProductsController {
 
   @Post()
   @UseGuards(new RolesGuard(['seller']))
-  @ApiOperation({ summary: 'Crear un nuevo producto' }) // Descripción de la operación
-  @ApiResponse({ status: 201, description: 'Producto creado exitosamente.' }) // Respuesta cuando el producto es creado
-  @ApiResponse({ status: 403, description: 'Acceso denegado' }) // Respuesta cuando el acceso es denegado (por falta de rol)
+  @ApiOperation({ summary: 'Crear un nuevo producto' })
+  @ApiBody({
+    description: 'Datos necesarios para crear un producto',
+    type: CreateProductDto,
+    examples: {
+      ejemplo: {
+        summary: 'Ejemplo de producto',
+        value: {
+          gtin: '1234567890123',
+          mpn: 'SKU-001',
+          brand: 'Nike',
+          base_model: 'AirMax',
+          seller_id: 9,
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Producto creado exitosamente', type: Product })
+  @ApiResponse({ status: 403, description: 'Acceso denegado - solo vendedores' })
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Obtener todos los productos' })
-  @ApiResponse({ status: 200, description: 'Lista de productos' })
+  @ApiOperation({ summary: 'Obtener todos los productos del vendedor autenticado' })
+  @ApiQuery({ name: 'page', required: false, description: 'Número de página', example: 1 })
+  @ApiQuery({ name: 'limit', required: false, description: 'Cantidad de elementos por página', example: 10 })
+  @ApiResponse({ status: 200, description: 'Lista paginada de productos', type: [Product] })
   findAll(
     @Req() req: Request,
     @Query('page') page: number = 1,
@@ -49,28 +75,79 @@ export class ProductsController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Obtener un producto por su ID' }) // Descripción de la operación
-  @ApiParam({ name: 'id', description: 'ID del producto' }) // Descripción del parámetro de ID
-  @ApiResponse({ status: 200, description: 'Producto encontrado' }) // Respuesta cuando se encuentra el producto
-  @ApiResponse({ status: 404, description: 'Producto no encontrado' }) // Respuesta cuando no se encuentra el producto
+  @ApiOperation({ summary: 'Obtener un producto por su ID' })
+  @ApiParam({ name: 'id', description: 'ID del producto' })
+  @ApiResponse({ status: 200, description: 'Producto encontrado', type: Product })
+  @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(+id);
   }
 
-  @Get()
-  @UseGuards(new RolesGuard(['buyer']))
-  @ApiOperation({ summary: 'Obtener producto con cierta referencia (user)' }) // Descripción de la operación
-  @ApiResponse({ status: 200, description: 'producto por referencia' })
-  findByReferenceId(@Query() reference: string) {
-    return this.productsService.findByReferenceId(reference);
-  }
+ @Get('reference/by-user')
+@UseGuards(new RolesGuard(['buyer']))
+@ApiOperation({
+  summary: 'Buscar producto por referencia asociada al usuario autenticado',
+  description: `
+Este endpoint permite a un usuario con el rol **buyer** (comprador) obtener un producto mediante una referencia específica.
+
+📌 **Casos de uso**:
+- Un comprador escanea o ingresa manualmente una referencia (código, string único, etc.) vinculada a un producto.
+- Se consulta si ese producto está disponible en su cuenta o contexto.
+
+🔒 **Requisitos**:
+- El usuario debe estar autenticado y tener el rol 'buyer'.
+- Se debe pasar el parámetro \`reference\` en la URL como query string.
+
+📥 **Parámetro esperado**:
+- \`reference\`: un string que representa la referencia del producto.
+
+📤 **Respuesta esperada**:
+- Un objeto \`Product\` si la referencia es válida y pertenece al contexto del usuario.
+- Error 404 si no se encuentra.
+  `
+})
+@ApiQuery({
+  name: 'reference',
+  description: 'Referencia única del producto (por ejemplo, código escaneado o string generado)',
+  required: true,
+  example: 'AIRMAX-BLACK-42'
+})
+@ApiResponse({
+  status: 200,
+  description: 'Producto encontrado que coincide con la referencia proporcionada.',
+  type: Product
+})
+@ApiResponse({
+  status: 403,
+  description: 'Acceso denegado: solo los usuarios con el rol buyer pueden usar este endpoint.'
+})
+@ApiResponse({
+  status: 404,
+  description: 'No se encontró ningún producto con esa referencia para este usuario.'
+})
+findByReferenceId(@Query('reference') reference: string) {
+  return this.productsService.findByReferenceId(reference);
+}
 
   @Patch(':id')
   @UseGuards(new RolesGuard(['seller']))
-  @ApiOperation({ summary: 'Actualizar un producto' }) // Descripción de la operación
-  @ApiParam({ name: 'id', description: 'ID del producto a actualizar' }) // Descripción del parámetro de ID
-  @ApiResponse({ status: 200, description: 'Producto actualizado' }) // Respuesta cuando se actualiza el producto
-  @ApiResponse({ status: 404, description: 'Producto no encontrado' }) // Respuesta cuando no se encuentra el producto a actualizar
+  @ApiOperation({ summary: 'Actualizar un producto existente' })
+  @ApiParam({ name: 'id', description: 'ID del producto a actualizar' })
+  @ApiBody({
+    description: 'Campos que se desean actualizar',
+    type: UpdateProductDto,
+    examples: {
+      ejemplo: {
+        summary: 'Ejemplo de actualización',
+        value: {
+          mpn: 'SKU-002',
+          base_model: 'AirMax Pro',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Producto actualizado correctamente', type: Product })
+  @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   update(
     @Req() req: Request,
     @Param('id') id: string,
@@ -82,10 +159,10 @@ export class ProductsController {
 
   @Delete(':id')
   @UseGuards(new RolesGuard(['seller']))
-  @ApiOperation({ summary: 'Eliminar un producto' }) // Descripción de la operación
-  @ApiParam({ name: 'id', description: 'ID del producto a eliminar' }) // Descripción del parámetro de ID
-  @ApiResponse({ status: 200, description: 'Producto eliminado' }) // Respuesta cuando se elimina el producto
-  @ApiResponse({ status: 404, description: 'Producto no encontrado' }) // Respuesta cuando no se encuentra el producto a eliminar
+  @ApiOperation({ summary: 'Eliminar un producto' })
+  @ApiParam({ name: 'id', description: 'ID del producto a eliminar' })
+  @ApiResponse({ status: 200, description: 'Producto eliminado exitosamente' })
+  @ApiResponse({ status: 404, description: 'Producto no encontrado' })
   remove(@Req() req: Request, @Param('id') id: string) {
     const user = req.user as JwtPayload;
     return this.productsService.remove(+id, user.sub);
