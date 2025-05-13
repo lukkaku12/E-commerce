@@ -64,6 +64,25 @@ export class ServicesController {
     return this.servicesService.create(createServiceDto);
   }
 
+  @Get('by-seller')
+  @UseGuards(new RolesGuard(['seller']))
+  @ApiOperation({
+    summary: 'Obtener servicios por vendedor',
+    description: 'Devuelve todos los servicios creados por el vendedor autenticado',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Servicios del vendedor obtenidos correctamente',
+    type: [Service],
+  })
+  @ApiNotFoundResponse({
+    description: 'No se encontraron servicios para este vendedor',
+  })
+  findBySeller(@Req() req: Request) {
+    const user = req.user as JwtPayload;
+    return this.servicesService.findBySellerId(user.sub);
+  }
+
   @Get()
   @ApiOperation({
     summary: 'Obtener todos los servicios',
