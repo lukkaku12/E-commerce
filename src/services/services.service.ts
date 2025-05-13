@@ -37,7 +37,7 @@ export class ServicesService {
   async findBySellerId(sellerId: number): Promise<Service[]> {
   return this.serviceRepository.find({
     where: { seller: { user_id: sellerId } },
-    relations: ['seller'],
+    relations: ['seller', 'serviceSchedule'],
   });
 }
 
