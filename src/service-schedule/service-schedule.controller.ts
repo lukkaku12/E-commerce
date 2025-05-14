@@ -15,6 +15,7 @@ import {
   ApiParam,
   ApiResponse,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -34,13 +35,30 @@ export class ServiceScheduleController {
 
   @Post()
   @UseGuards(new RolesGuard(['seller']))
+  @ApiBody({
+  schema: {
+    oneOf: [
+      { $ref: getSchemaPath(CreateServiceScheduleDto) },
+      {
+        type: 'array',
+        items: { $ref: getSchemaPath(CreateServiceScheduleDto) },
+      },
+    ],
+  },
+  })
   @ApiOperation({ summary: 'Crear un nuevo horario de servicio' })
   @ApiResponse({ status: 201, description: 'Horario creado exitosamente.' })
   @ApiResponse({ status: 403, description: 'Acceso denegado.' })
   @ApiBody({ type: CreateServiceScheduleDto })
-  create(@Body() createServiceScheduleDto: CreateServiceScheduleDto) {
-    return this.serviceScheduleService.create(createServiceScheduleDto);
+  create(
+  @Body() body: CreateServiceScheduleDto | CreateServiceScheduleDto[],
+) {
+  if (Array.isArray(body)) {
+    return this.serviceScheduleService.createMany(body);
+  } else {
+    return this.serviceScheduleService.create(body);
   }
+}
 
   @Get()
   @UseGuards(new RolesGuard(['buyer', 'seller']))

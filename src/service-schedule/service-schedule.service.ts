@@ -51,6 +51,11 @@ export class ServiceScheduleService {
     return await this.scheduleRepository.save(newSchedule);
   }
 
+  async createMany(dtos: CreateServiceScheduleDto[]) {
+  const schedules = this.scheduleRepository.create(dtos);
+  return this.scheduleRepository.save(schedules);
+  }
+
   async findAll(): Promise<ServiceSchedule[]> {
     const ServiceSchedulesCached = await this.cacheManager.get<
       ServiceSchedule[]
