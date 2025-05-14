@@ -44,7 +44,7 @@ export class ServicesService {
   async findOne(id: number): Promise<Service> {
     const service = await this.serviceRepository.findOne({
       where: { service_id: id },
-      relations: ['serviceschedule'],
+      relations: ['serviceSchedule'],
     });
 
     if (!service) {
