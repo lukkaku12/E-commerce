@@ -51,10 +51,29 @@ export class ServiceScheduleService {
     return await this.scheduleRepository.save(newSchedule);
   }
 
-  async createMany(dtos: CreateServiceScheduleDto[]) {
-  const schedules = this.scheduleRepository.create(dtos);
-  return this.scheduleRepository.save(schedules);
+  async createMany(dtos: CreateServiceScheduleDto[]): Promise<ServiceSchedule[]> {
+  const schedules: ServiceSchedule[] = [];
+
+  for (const dto of dtos) {
+    const service = await this.serviceService.findOne(dto.service_id);
+    if (!service) {
+      throw new NotFoundException(`Service with ID ${dto.service_id} not found`);
+    }
+
+    if (dto.start_time >= dto.ending_time) {
+      throw new BadRequestException('Ending time must be after start time');
+    }
+
+    const schedule = this.scheduleRepository.create({
+      ...dto,
+      service,
+    });
+
+    schedules.push(schedule);
   }
+
+  return await this.scheduleRepository.save(schedules);
+}
 
   async findAll(): Promise<ServiceSchedule[]> {
     const ServiceSchedulesCached = await this.cacheManager.get<
