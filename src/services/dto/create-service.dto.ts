@@ -23,4 +23,9 @@ export class CreateServiceDto {
   @IsNumber()
   @IsNotEmpty()
   service_price: number;
+
+  @ApiProperty({ example: 15, description: 'Id del vendedor' })
+  @IsNumber()
+  @IsNotEmpty()
+  seller_id?: number;
 }

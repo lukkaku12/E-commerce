@@ -9,23 +9,36 @@ import { Repository } from 'typeorm';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { Service } from './entities/service.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ServicesService {
   constructor(
     @InjectRepository(Service)
     private readonly serviceRepository: Repository<Service>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async create(createServiceDto: CreateServiceDto): Promise<Service> {
-    const newService = this.serviceRepository.create({
-      ...createServiceDto,
-      created_at: new Date(),
-      updated_at: new Date(),
-    });
+  // Buscar al usuario (vendedor) por su ID
+  const seller = await this.userRepository.findOne({
+    where: { user_id: createServiceDto.seller_id },
+  });
 
-    return await this.serviceRepository.save(newService);
+  if (!seller) {
+    throw new NotFoundException(`Seller with ID ${createServiceDto.seller_id} not found`);
   }
+
+  const newService = this.serviceRepository.create({
+    ...createServiceDto,
+    seller, // asignar como entidad, no como ID
+    created_at: new Date(),
+    updated_at: new Date(),
+  });
+
+  return await this.serviceRepository.save(newService);
+}
 
   async findAll(): Promise<Service[]> {
     return await this.serviceRepository.find({
