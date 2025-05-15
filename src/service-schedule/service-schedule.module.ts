@@ -7,10 +7,11 @@ import { ServicesService } from 'src/services/services.service';
 import { ServiceSchedule } from './entities/service-schedule.entity';
 import { ServiceScheduleController } from './service-schedule.controller';
 import { ServiceScheduleService } from './service-schedule.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ServiceSchedule, Service]), // Agregado Service para las relaciones
+    TypeOrmModule.forFeature([ServiceSchedule, Service, User]), // Agregado Service para las relaciones
     CacheModule.register(), // Importado CacheModule para la caché
   ],
   controllers: [ServiceScheduleController],
