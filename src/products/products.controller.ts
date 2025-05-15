@@ -74,6 +74,19 @@ export class ProductsController {
     return this.productsService.findAll(user.sub, limit, offset);
   }
 
+  @Get('public')
+@ApiOperation({ summary: 'Obtener todos los productos visibles para clientes' })
+@ApiQuery({ name: 'page', required: false, example: 1 })
+@ApiQuery({ name: 'limit', required: false, example: 10 })
+@ApiResponse({ status: 200, description: 'Lista de productos visibles', type: [Product] })
+findPublicProducts(
+  @Query('page') page: number = 1,
+  @Query('limit') limit: number = 10,
+) {
+  const offset = (page - 1) * limit;
+  return this.productsService.findPublic(limit, offset);
+}
+
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un producto por su ID' })
   @ApiParam({ name: 'id', description: 'ID del producto' })

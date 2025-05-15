@@ -48,6 +48,15 @@ export class ProductsService {
     });
   }
 
+  async findPublic(limit: number, offset: number): Promise<Product[]> {
+  return this.productRepository.find({
+    skip: offset,
+    take: limit,
+    relations: ['seller', 'product_variants'], // si quieres mostrar relaciones
+    order: { created_at: 'DESC' },
+  });
+}
+
   async findOne(id: number): Promise<Product> {
     const productsCached = await this.cacheManager.get<Product>(String(id));
     if (productsCached) {
