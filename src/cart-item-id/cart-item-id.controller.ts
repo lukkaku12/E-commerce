@@ -28,7 +28,6 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 @ApiTags('Cart Item ID')
 @Controller('cart-item-id')
 @UseGuards(JwtAuthGuard)
-@UseGuards(new RolesGuard(['buyer']))
 export class CartItemIdController {
   constructor(private readonly cartItemIdService: CartItemIdService) {}
 
@@ -50,6 +49,7 @@ export class CartItemIdController {
   }
 
   @Get()
+  @UseGuards(new RolesGuard(['buyer']))
   @ApiOperation({ summary: 'Obtener todos los items del carrito' })
   @ApiResponse({ status: 200, description: 'Lista de items' })
   findAll(
