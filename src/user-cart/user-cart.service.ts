@@ -22,8 +22,12 @@ export class UserCartService {
     return await this.userCartRepository.save(newCart);
   }
 
-  async findAll(): Promise<UserCart[]> {
-    return await this.userCartRepository.find();
+  async findAll(userId: number): Promise<UserCart[]> {
+    return await this.userCartRepository.find({
+      where: {
+        user: {user_id: userId}
+      }
+    });
   }
 
   async findOne(id: number): Promise<UserCart> {

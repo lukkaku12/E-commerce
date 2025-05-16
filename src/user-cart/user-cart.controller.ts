@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,9 +18,14 @@ import {
 import { CreateUserCartDto } from './dto/create-user-cart.dto';
 import { UpdateUserCartDto } from './dto/update-user-cart.dto';
 import { UserCartService } from './user-cart.service';
+import { JwtPayload } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('UserCart')
 @Controller('user-cart')
+@UseGuards(JwtAuthGuard)
+@UseGuards(new RolesGuard(['buyer']))
 export class UserCartController {
   constructor(private readonly userCartService: UserCartService) {}
 
@@ -44,7 +50,8 @@ export class UserCartController {
   @Get()
   @ApiOperation({ summary: 'Obtener todos los carritos de usuario' })
   findAll() {
-    return this.userCartService.findAll();
+    const user = req.user as JwtPayload;
+    return this.userCartService.findAll(user.sub);
   }
 
   @Get(':id')
