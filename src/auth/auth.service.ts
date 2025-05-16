@@ -5,10 +5,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { UserCart } from 'src/user-cart/entities/user-cart.entity';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { Repository } from 'typeorm';
 
 export interface JwtPayload {
   sub: number;
@@ -26,12 +29,19 @@ export class AuthService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-  ) {}
+    @InjectRepository(UserCart)
+    private readonly cartRepository: Repository<UserCart>,
+  ) { }
 
   async registerUser(
     createUserDto: CreateUserDto,
   ): Promise<{ accessToken: string; user: User }> {
     const user = await this.usersService.create(createUserDto);
+    const userCart = this.cartRepository.create({
+      user: user,
+      status: 'active',
+    });
+    await this.cartRepository.save(userCart);
     return this.generateJwtToken(user);
   }
 

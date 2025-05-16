@@ -9,10 +9,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { LocalAuthGuard } from './guards/jwt/local-auth.guard';
 import { UsersModule } from 'src/users/users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserCart } from 'src/user-cart/entities/user-cart.entity';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
+    TypeOrmModule.forFeature([UserCart]),
     PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
