@@ -37,11 +37,13 @@ export class AuthService {
     createUserDto: CreateUserDto,
   ): Promise<{ accessToken: string; user: User }> {
     const user = await this.usersService.create(createUserDto);
+    if (user.role === 'buyer') {
     const userCart = this.cartRepository.create({
-      user: user,
+      user,
       status: 'active',
     });
     await this.cartRepository.save(userCart);
+  }
     return this.generateJwtToken(user);
   }
 
