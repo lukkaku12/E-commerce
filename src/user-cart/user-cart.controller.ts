@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -14,6 +15,8 @@ import {
   ApiResponse,
   ApiBody,
 } from '@nestjs/swagger';
+
+import { Request } from 'express';
 
 import { CreateUserCartDto } from './dto/create-user-cart.dto';
 import { UpdateUserCartDto } from './dto/update-user-cart.dto';
@@ -49,7 +52,9 @@ export class UserCartController {
 
   @Get()
   @ApiOperation({ summary: 'Obtener todos los carritos de usuario' })
-  findAll() {
+  findAll(
+    @Req() req: Request,
+  ) {
     const user = req.user as JwtPayload;
     return this.userCartService.findAll(user.sub);
   }

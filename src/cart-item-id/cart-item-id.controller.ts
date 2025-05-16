@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -14,6 +15,8 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
+
+import { Request } from 'express';
 
 import { CartItemIdService } from './cart-item-id.service';
 import { CreateCartItemIdDto } from './dto/create-cart-item-id.dto';
@@ -49,7 +52,9 @@ export class CartItemIdController {
   @Get()
   @ApiOperation({ summary: 'Obtener todos los items del carrito' })
   @ApiResponse({ status: 200, description: 'Lista de items' })
-  findAll() {
+  findAll(
+    @Req() req: Request,
+  ) {
     const user = req.user as JwtPayload;
     return this.cartItemIdService.findAll(user.sub);
   }
