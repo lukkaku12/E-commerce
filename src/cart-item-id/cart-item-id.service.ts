@@ -18,8 +18,13 @@ export class CartItemIdService {
     return await this.cartItemRepository.save(newCartItem);
   }
 
-  async findAll(): Promise<CartItem[]> {
-    return await this.cartItemRepository.find();
+  async findAll(user_id: number): Promise<CartItem[]> {
+    return await this.cartItemRepository.find({
+      
+      where: { cart: { user: {user_id: user_id} } },
+      relations: ['cart'],
+    
+    });
   }
 
   async findOne(id: number): Promise<CartItem> {

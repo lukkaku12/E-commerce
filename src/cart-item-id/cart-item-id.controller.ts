@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,9 +18,14 @@ import {
 import { CartItemIdService } from './cart-item-id.service';
 import { CreateCartItemIdDto } from './dto/create-cart-item-id.dto';
 import { UpdateCartItemIdDto } from './dto/update-cart-item-id.dto';
+import { JwtPayload } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @ApiTags('Cart Item ID')
 @Controller('cart-item-id')
+@UseGuards(JwtAuthGuard)
+@UseGuards(new RolesGuard(['buyer']))
 export class CartItemIdController {
   constructor(private readonly cartItemIdService: CartItemIdService) {}
 
@@ -44,7 +50,8 @@ export class CartItemIdController {
   @ApiOperation({ summary: 'Obtener todos los items del carrito' })
   @ApiResponse({ status: 200, description: 'Lista de items' })
   findAll() {
-    return this.cartItemIdService.findAll();
+    const user = req.user as JwtPayload;
+    return this.cartItemIdService.findAll(user.sub);
   }
 
   @Get(':id')
