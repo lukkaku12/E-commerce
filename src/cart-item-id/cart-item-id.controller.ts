@@ -44,8 +44,9 @@ export class CartItemIdController {
     },
   })
   @ApiResponse({ status: 201, description: 'Item creado correctamente' })
-  create(@Body() createCartItemIdDto: CreateCartItemIdDto) {
-    return this.cartItemIdService.create(createCartItemIdDto);
+  create(@Body() createCartItemIdDto: CreateCartItemIdDto, @Req() req: Request) {
+    const user = req.user as JwtPayload;
+    return this.cartItemIdService.create(createCartItemIdDto, user.sub);
   }
 
   @Get()

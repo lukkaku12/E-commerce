@@ -19,25 +19,23 @@ export class CartItemIdService {
     private readonly userCartRepository: Repository<UserCart>,
   ) {}
 
-  async create(createCartItemIdDto: CreateCartItemIdDto): Promise<CartItem> {
-  const { productId, userCartId, quantity } = createCartItemIdDto;
+async create(createCartItemDto: CreateCartItemIdDto, userId: number): Promise<CartItem> {
+  const { productId, quantity } = createCartItemDto;
 
-  // Buscar el ProductVariant por ID
   const productVariant = await this.productVariantRepository.findOne({
-    where: { product: {product_id: productId }},
+    where: { product: { product_id: productId } },
   });
 
   if (!productVariant) {
     throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
   }
 
-  // Buscar el UserCart por ID
   const userCart = await this.userCartRepository.findOne({
-    where: { cart_id: userCartId },
+    where: { user: { user_id: userId } },
   });
 
   if (!userCart) {
-    throw new NotFoundException(`Carrito con ID ${userCartId} no encontrado`);
+    throw new NotFoundException(`No se encontró carrito para el usuario ${userId}`);
   }
 
   const cartItem = this.cartItemRepository.create({
