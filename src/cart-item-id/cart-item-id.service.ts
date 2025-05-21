@@ -51,7 +51,11 @@ async create(createCartItemDto: CreateCartItemIdDto, userId: number): Promise<Ca
     return await this.cartItemRepository.find({
       
       where: { cart: { user: {user_id: user_id} } },
-      relations: ['cart'],
+      relations: [
+      'cart',
+      'productVariant',
+      'productVariant.product'
+    ],
     
     });
   }

@@ -30,7 +30,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 @Controller('cart-item-id')
 @UseGuards(JwtAuthGuard)
 export class CartItemIdController {
-  constructor(private readonly cartItemIdService: CartItemIdService) {}
+  constructor(private readonly cartItemIdService: CartItemIdService) { }
 
   @Post()
   @ApiOperation({ summary: 'Crear item de carrito' })
@@ -89,11 +89,11 @@ export class CartItemIdController {
   }
 
   @Delete(':id')
-@ApiOperation({ summary: 'Eliminar un item del carrito' })
-@ApiParam({ name: 'id', type: Number })
-@ApiResponse({ status: 200, description: 'Item eliminado correctamente' })
-remove(@Param('id') id: string, @Req() req: Request) {
-  const user = req.user as JwtPayload;
-  return this.cartItemIdService.remove(+id, user.sub);
-}
+  @ApiOperation({ summary: 'Eliminar un item del carrito' })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiResponse({ status: 200, description: 'Item eliminado correctamente' })
+  remove(@Param('id') id: string, @Req() req: Request) {
+    const user = req.user as JwtPayload;
+    return this.cartItemIdService.remove(+id, user.sub);
+  }
 }
