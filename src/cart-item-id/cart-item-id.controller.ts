@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -86,4 +87,13 @@ export class CartItemIdController {
   ) {
     return this.cartItemIdService.update(+id, updateCartItemIdDto);
   }
+
+  @Delete(':id')
+@ApiOperation({ summary: 'Eliminar un item del carrito' })
+@ApiParam({ name: 'id', type: Number })
+@ApiResponse({ status: 200, description: 'Item eliminado correctamente' })
+remove(@Param('id') id: string, @Req() req: Request) {
+  const user = req.user as JwtPayload;
+  return this.cartItemIdService.remove(+id, user.sub);
+}
 }

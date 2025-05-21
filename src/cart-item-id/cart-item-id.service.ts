@@ -83,4 +83,20 @@ async create(createCartItemDto: CreateCartItemIdDto, userId: number): Promise<Ca
       where: { cart: { cart_id: cartId } },
     });
   }
+
+  async remove(cartItemId: number, userId: number) {
+    const item = await this.cartItemRepository.findOne({
+      where: {
+        cart_item_id: cartItemId,
+        cart: { user: { user_id: userId } }, // relacional
+      },
+      relations: ['cart', 'cart.user'], // necesario para acceder a cart.user.id
+    });
+
+    if (!item) {
+      throw new NotFoundException('Item no encontrado o no te pertenece');
+    }
+
+    return this.cartItemRepository.remove(item);
+  }
 }
