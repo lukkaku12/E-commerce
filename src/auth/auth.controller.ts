@@ -2,9 +2,10 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOperation,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -22,6 +23,7 @@ export interface RequestWithUser extends Request {
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // 🔐 REGISTER
   @Post('register')
   @ApiOperation({
     summary: 'Register a new user',
@@ -34,7 +36,6 @@ export class AuthController {
   })
   @ApiCreatedResponse({
     description: 'User successfully registered.',
-    type: User,
     schema: {
       example: {
         accessToken: 'JWT_TOKEN',
@@ -42,18 +43,18 @@ export class AuthController {
           id: 'uuid',
           name: 'Jane Smith',
           email: 'janesmith@example.com',
-          onboarding: 'false',
-          role: 'user',
+          onboarding: false,
+          role: 'buyer',
         },
       },
     },
   })
   @ApiBadRequestResponse({
-    description: 'Invalid input data. Validation failed.',
+    description: 'Invalid input data. Validation failed or user already exists.',
     schema: {
       example: {
         statusCode: 400,
-        message: ['name should not be empty', 'email must be an email'],
+        message: ['email must be an email', 'password must be longer than 6 characters'],
         error: 'Bad Request',
       },
     },
@@ -64,19 +65,20 @@ export class AuthController {
     return await this.authService.registerUser(createUserDto);
   }
 
+  // 🔐 LOGIN
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiOperation({
-    summary: 'Login a user (patient or doctor)',
+    summary: 'Login a user (buyer, seller, etc.)',
     description:
-      'Authenticate a user using email and password. Returns a JWT token and user information.',
+      'Authenticates a user using email and password. Returns a JWT token and user info if valid.',
   })
   @ApiBody({
     description: 'Credentials for login',
     schema: {
       example: {
         email: 'user@example.com',
-        password: 'your_password',
+        password: 'securePassword123',
       },
     },
   })
@@ -89,36 +91,56 @@ export class AuthController {
           id: 'uuid',
           name: 'Jane Smith',
           email: 'janesmith@example.com',
-          onboarding: 'false',
-          role: 'user',
+          onboarding: false,
+          role: 'buyer',
         },
       },
     },
   })
-  @ApiUnauthorizedResponse({
-    description: 'Invalid credentials provided.',
+  @ApiBadRequestResponse({
+    description: 'Email or password missing.',
     schema: {
       example: {
-        statusCode: 401,
-        message: 'Invalid credentials',
-        error: 'Unauthorized',
+        statusCode: 400,
+        message: 'Email and password are required',
+        error: 'Bad Request',
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found.',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'User not found',
+        error: 'Not Found',
+      },
+    },
+  })
+  @ApiForbiddenResponse({
+    description: 'Incorrect password.',
+    schema: {
+      example: {
+        statusCode: 403,
+        message: 'Incorrect password',
+        error: 'Forbidden',
       },
     },
   })
   login(@Req() req: RequestWithUser) {
     const user = req.user as User;
-    const jwtAndUser = this.authService.generateJwtToken(user);
-    return jwtAndUser;
+    return this.authService.generateJwtToken(user);
   }
 
+  // 🔐 LOGOUT
   @Post('logout')
   @ApiOperation({
     summary: 'Logout a user',
     description:
-      'Logs out a user by instructing the client to delete the JWT token. This endpoint does not invalidate tokens on the server side.',
+      'Logs out a user by informing the client to delete the JWT token. No server-side token invalidation.',
   })
   @ApiCreatedResponse({
-    description: 'User successfully logged out.',
+    description: 'Logout successful.',
     schema: {
       example: {
         message: 'Logout successful. Delete the token on the client side.',

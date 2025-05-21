@@ -1,7 +1,10 @@
 import {
+  BadRequestException,
+  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -48,21 +51,28 @@ export class AuthService {
   }
 
   async validateUser(userData: {
-    email: string;
-    password: string;
-  }): Promise<User> {
-    const { email, password } = userData;
-    const foundUser = await this.usersService.findByEmail(email);
+  email: string;
+  password: string;
+}): Promise<User> {
+  const { email, password } = userData;
 
-    if (
-      !foundUser ||
-      !(await this.comparePasswords(password, foundUser.password))
-    ) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    return foundUser;
+  if (!email || !password) {
+    throw new BadRequestException('Email and password are required');
   }
+
+  const foundUser = await this.usersService.findByEmail(email);
+
+  if (!foundUser) {
+    throw new NotFoundException('User not found');
+  }
+
+  const passwordMatch = await this.comparePasswords(password, foundUser.password);
+  if (!passwordMatch) {
+    throw new ForbiddenException('Incorrect password');
+  }
+
+  return foundUser;
+}
 
   generateJwtToken(user: User): JwtTokenData {
     const payload: JwtPayload = {
