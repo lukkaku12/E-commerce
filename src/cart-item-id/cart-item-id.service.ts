@@ -85,18 +85,23 @@ async create(createCartItemDto: CreateCartItemIdDto, userId: number): Promise<Ca
   }
 
   async remove(cartItemId: number, userId: number) {
-    const item = await this.cartItemRepository.findOne({
-      where: {
-        cart_item_id: cartItemId,
-        cart: { user: { user_id: userId } }, // relacional
+  const cartItem = await this.cartItemRepository.findOne({
+    where: { cart_item_id: cartItemId },
+    relations: {
+      cart: {
+        user: true,
       },
-      relations: ['cart', 'cart.user'], // necesario para acceder a cart.user.id
-    });
+    },
+  });
 
-    if (!item) {
-      throw new NotFoundException('Item no encontrado o no te pertenece');
-    }
-
-    return this.cartItemRepository.remove(item);
+  if (!cartItem) {
+    throw new NotFoundException('Item no encontrado');
   }
+
+  if (cartItem.cart.user.user_id !== userId) {
+    throw new NotFoundException('Item no encontrado o no te pertenece');
+  }
+
+  return this.cartItemRepository.remove(cartItem);
+}
 }
