@@ -33,7 +33,6 @@ export class OrdersController {
     const user = req.user as JwtPayload;
     return this.ordersService.findOrdersByUser(user.sub);
   }
-}
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {
