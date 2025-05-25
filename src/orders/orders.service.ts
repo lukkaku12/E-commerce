@@ -59,4 +59,12 @@ export class OrdersService {
     await this.transactionsService.refundPayment(orderId)
     return { success: true }
   }
+
+  async findOrdersByUser(userId: number) {
+  return this.orderRepository.find({
+    where: { user: { user_id: userId } },
+    relations: ['items', 'transactions'],
+    order: { created_at: 'DESC' },
+  });
+}
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Req } from '@nestjs/common';
+import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiBearerAuth,
@@ -9,10 +9,12 @@ import { Request } from 'express';
 
 import { OrdersService } from './orders.service';
 import { JwtPayload } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-auth.guard';
 
 @ApiTags('Orders')
 @ApiBearerAuth() // indica que requiere token JWT
 @Controller('orders')
+@UseGuards(JwtAuthGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
@@ -23,6 +25,15 @@ export class OrdersController {
     const user = req.user as JwtPayload;
     return this.ordersService.createOrderFromCart(user.sub);
   }
+
+  @Get()
+  @ApiOperation({ summary: 'Obtener todas las órdenes del usuario autenticado' })
+  @ApiResponse({ status: 200, description: 'Órdenes recuperadas correctamente' })
+  findAllByUser(@Req() req: Request) {
+    const user = req.user as JwtPayload;
+    return this.ordersService.findOrdersByUser(user.sub);
+  }
+}
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {
