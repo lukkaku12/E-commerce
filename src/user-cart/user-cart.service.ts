@@ -55,6 +55,7 @@ export class UserCartService {
   async getCart(userId: number): Promise<CartItem[]> {
     const userWithCart = await this.userCartRepository.findOne({
       where: { user: { user_id: userId } },
+      relations:['user', 'cartItems']
     });
     if (!userWithCart)
       throw new NotFoundException(`User with ID ${userId} not found`);
