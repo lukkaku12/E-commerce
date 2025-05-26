@@ -71,11 +71,11 @@ export class TransactionsService {
     const registryData: any = {};
 
     // Verificar si metadata contiene scheduleId u orderId
-    if (metadata.scheduleId) {
-      registryData.service_schedule_id = metadata.scheduleId;
-    } else if (metadata.orderId) {
-      registryData.order_id = metadata.orderId;
-    }
+  if (metadata && metadata.scheduleId) {
+    registryData.service_schedule_id = metadata.scheduleId;
+  } else if (metadata && metadata.orderId) {
+    registryData.order_id = metadata.orderId;
+  }
 
     // 2. Registrar transacción en la base de datos
     const transaction = this.transactionRepository.create({
