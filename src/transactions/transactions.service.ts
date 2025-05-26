@@ -51,9 +51,9 @@ export class TransactionsService {
           },
         ],
         back_urls: {
-          success: `${this.configService.get('APP_URL')}/transactions/success`,
-          failure: `${this.configService.get('APP_URL')}/transactions/failure`,
-          pending: `${this.configService.get('APP_URL')}/transactions/pending`,
+          success: `https://e-commerce-front-end-gamma.vercel.app/checkout/success`,
+          failure: `https://e-commerce-front-end-gamma.vercel.app/checkout/failure`,
+          pending: `https://e-commerce-front-end-gamma.vercel.app/checkout/pending`,
         },
         auto_return: 'approved', // Redirige automáticamente si el pago es exitoso
         notification_url: `${this.configService.get(
