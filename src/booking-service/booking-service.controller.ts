@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt/jwt-auth.guard';
 
@@ -64,10 +64,11 @@ export class BookingController {
     description: 'Horario no disponible o usuario no encontrado.',
   })
   async bookService(
-    @Body('userId') userId: number,
     @Body('scheduleId') scheduleId: number,
+    @Req() req: Request
   ) {
-    return this.bookingService.bookService(userId, scheduleId);
+    const user = req.user as JwtPayload;
+    return this.bookingService.bookService(user.sub, scheduleId);
   }
   @Post('refund')
   async refundBooking(@Body('parameterId') parameterId: number) {
