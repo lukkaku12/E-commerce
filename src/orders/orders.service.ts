@@ -23,9 +23,11 @@ export class OrdersService {
     }
 
     // 1️⃣ Validar stock y calcular el total
-    const total = cart.reduce(
-      (sum, item) => sum + item.productVariant.price * item.quantity,
-      0,
+    const total = Math.round(
+      cart.reduce(
+        (sum, item) => sum + item.productVariant.price * item.quantity,
+        0,
+      )
     );
 
     // 2️⃣ Procesar pago (simulación)
